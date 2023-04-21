@@ -1,0 +1,8 @@
+client/node_modules
+cart/node_modules
+event_bus/node_modules
+moderation/node_modules
+orders/node_modules
+products/node_modules
+query/node_modules
+reviews/node_modules
