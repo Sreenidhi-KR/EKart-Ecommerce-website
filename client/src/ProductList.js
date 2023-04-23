@@ -7,9 +7,12 @@ const ProductList = () => {
   const [products, setProducts] = useState({});
 
   const fetchProducts = async () => {
-    const res = await axios.get("http://query-srv:4002/products");
-
-    setProducts(res.data);
+    try {
+      const res = await axios.get("http://ecommerce.com/products");
+      setProducts(res.data);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   useEffect(() => {

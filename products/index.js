@@ -10,11 +10,11 @@ app.use(cors());
 
 const products = {};
 
-// app.get("/products", (req, res) => {
-//   res.send(products);
-// });
+app.get("/products", (req, res) => {
+  res.send(products);
+});
 
-app.post("/products", async (req, res) => {
+app.post("/products/create", async (req, res) => {
   const productId = randomBytes(4).toString("hex");
   const { name, price } = req.body;
 
