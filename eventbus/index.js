@@ -11,23 +11,27 @@ app.post("/events", (req, res) => {
   const event = req.body;
 
   events.push(event);
-
-  axios.post("http://localhost:4000/events", event).catch((err) => {
+  console.log(event);
+  axios.post("http://products-srv:4000/events", event).catch((err) => {
     console.log("products");
     console.log(err.message);
   });
-  axios.post("http://localhost:4001/events", event).catch((err) => {
+  axios.post("http://reviews-srv:4001/events", event).catch((err) => {
     console.log("reviews");
     console.log(err.message);
   });
-  axios.post("http://localhost:4002/events", event).catch((err) => {
+  axios.post("http://query-srv:4002/events", event).catch((err) => {
     console.log("query");
     console.log(err.message);
   });
-  axios.post("http://localhost:4003/events", event).catch((err) => {
+  axios.post("http://moderation-srv:4003/events", event).catch((err) => {
     console.log("moderation");
     console.log(err.message);
   });
+  // axios.post("http://orders-srv:4004/events", event).catch((err) => {
+  //   console.log("orders");
+  //   console.log(err.message);
+  // });
   res.send({ status: "OK" });
 });
 
@@ -36,5 +40,5 @@ app.get("/events", (req, res) => {
 });
 
 app.listen(4005, () => {
-  console.log("Listening on 4005");
+  console.log("Eventbus Listening on 4005");
 });

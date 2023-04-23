@@ -7,7 +7,7 @@ const ProductList = () => {
   const [products, setProducts] = useState({});
 
   const fetchProducts = async () => {
-    const res = await axios.get("http://localhost:4002/products");
+    const res = await axios.get("http://query-srv:4002/products");
 
     setProducts(res.data);
   };
@@ -25,8 +25,8 @@ const ProductList = () => {
       >
         <div className="card-body">
           <h3>{product.name}</h3>
-          <h5>₹ {product.price}</h5>
-          <h5> Product Reviews</h5>
+          <h6>₹ {product.price}</h6>
+          <h6> Product Reviews</h6>
           <ReviewsList reviews={product.reviews} />
           <ReviewCreate productId={product.productId} />
         </div>

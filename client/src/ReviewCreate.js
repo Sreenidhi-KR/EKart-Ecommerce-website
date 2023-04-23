@@ -7,7 +7,7 @@ const ReviewCreate = ({ productId }) => {
   const onSubmit = async (event) => {
     event.preventDefault();
 
-    await axios.post(`http://localhost:4001/product/${productId}/reviews`, {
+    await axios.post(`http://reviews-srv:4001/product/${productId}/reviews`, {
       content,
     });
 

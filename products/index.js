@@ -24,7 +24,7 @@ app.post("/products", async (req, res) => {
     price,
   };
 
-  await axios.post("http://localhost:4005/events", {
+  await axios.post("http://eventbus-srv:4005/events", {
     type: "ProductCreated",
     data: {
       productId,
@@ -41,5 +41,5 @@ app.post("/events", (req, res) => {
 });
 
 app.listen(4000, () => {
-  console.log("Listening on 4000");
+  console.log("Products Listening on 4000");
 });

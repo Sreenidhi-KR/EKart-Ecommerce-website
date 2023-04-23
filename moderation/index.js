@@ -19,7 +19,7 @@ app.post("/events", async (req, res) => {
       content: data.content,
     });
 
-    await axios.post("http://localhost:4005/events", {
+    await axios.post("http://eventbus-srv:4005/events", {
       type: "ReviewModerated",
       data: {
         reviewId: data.reviewId,
@@ -34,5 +34,5 @@ app.post("/events", async (req, res) => {
 });
 
 app.listen(4003, () => {
-  console.log("Listening on 4003");
+  console.log("Moderation Listening on 4003");
 });

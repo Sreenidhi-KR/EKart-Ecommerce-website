@@ -24,7 +24,7 @@ app.post("/product/:id/reviews", async (req, res) => {
 
   reviewsByProductId[req.params.id] = reviews;
 
-  await axios.post("http://localhost:4005/events", {
+  await axios.post("http://eventbus-srv:4005/events", {
     type: "ReviewCreated",
     data: {
       reviewId,
@@ -55,7 +55,7 @@ app.post("/events", async (req, res) => {
       productId,
       content,
     });
-    await axios.post("http://localhost:4005/events", {
+    await axios.post("http://eventbus-srv:4005/events", {
       type: "ReviewUpdated",
       data: {
         reviewId,
@@ -70,5 +70,5 @@ app.post("/events", async (req, res) => {
 });
 
 app.listen(4001, () => {
-  console.log("Listening on 4001");
+  console.log("Reviews Listening on 4001");
 });
