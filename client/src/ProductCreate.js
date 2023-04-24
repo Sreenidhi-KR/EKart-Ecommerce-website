@@ -8,7 +8,7 @@ const ProductCreate = () => {
   const onSubmit = async (event) => {
     event.preventDefault();
 
-    await axios.post("http://ecommerce.com/products/create", {
+    await axios.post("http://ekart.com/product/create", {
       name: productName,
       price: productPrice,
     });

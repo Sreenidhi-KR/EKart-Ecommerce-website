@@ -16,7 +16,7 @@ const ReviewsList = ({ reviews }) => {
       content = "This comment has been rejected";
     }
 
-    return <li key={review.id}>{content}</li>;
+    return <li key={review.reviewId}>{content}</li>;
   });
 
   return <ul>{renderedReviews}</ul>;

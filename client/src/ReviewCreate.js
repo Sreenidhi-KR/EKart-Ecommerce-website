@@ -7,7 +7,7 @@ const ReviewCreate = ({ productId }) => {
   const onSubmit = async (event) => {
     event.preventDefault();
 
-    await axios.post(`http://ecommerce.com/product/${productId}/reviews`, {
+    await axios.post(`http://ekart.com/product/${productId}/reviews`, {
       content,
     });
 

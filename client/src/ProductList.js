@@ -8,7 +8,7 @@ const ProductList = () => {
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("http://ecommerce.com/products");
+      const res = await axios.get("http://ekart.com/products");
       setProducts(res.data);
     } catch (err) {
       console.log(err);

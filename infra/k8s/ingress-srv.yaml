@@ -7,10 +7,10 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   rules:
-    - host: ecommerce.com
+    - host: ekart.com
       http:
         paths:
-          - path: /products/create
+          - path: /product/create
             pathType: Prefix
             backend:
               service:
@@ -24,7 +24,7 @@ spec:
                 name: query-srv
                 port:
                   number: 4002
-          - path: /products/?(.*)/reviews
+          - path: /product/?(.*)/reviews
             pathType: Prefix
             backend:
               service:
