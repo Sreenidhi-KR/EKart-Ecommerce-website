@@ -31,6 +31,13 @@ spec:
                 name: reviews-srv
                 port:
                   number: 4001
+          - path: /users/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: auth-srv
+                port:
+                  number: 3001
           - path: /?(.*)
             pathType: Prefix
             backend:

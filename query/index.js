@@ -12,8 +12,15 @@ const products = {};
 const handleEvent = (type, data) => {
   if (type === "ProductCreated") {
     console.log("Event Received:", type);
-    const { productId, name, price } = data;
-    products[productId] = { productId, name, price, reviews: [] };
+    const { productId, name, price, stock, imageUrl } = data;
+    products[productId] = {
+      productId,
+      name,
+      stock,
+      imageUrl,
+      price,
+      reviews: [],
+    };
   }
 
   if (type === "ReviewCreated") {

@@ -16,12 +16,14 @@ const products = {};
 
 app.post("/product/create", async (req, res) => {
   const productId = randomBytes(4).toString("hex");
-  const { name, price } = req.body;
+  const { name, price, stock, imageUrl } = req.body;
 
   products[productId] = {
     productId,
     name,
     price,
+    imageUrl,
+    stock,
   };
 
   await axios.post("http://eventbus-srv:4005/events", {
@@ -30,6 +32,8 @@ app.post("/product/create", async (req, res) => {
       productId,
       name,
       price,
+      imageUrl,
+      stock,
     },
   });
   res.status(201).send(products[productId]);
