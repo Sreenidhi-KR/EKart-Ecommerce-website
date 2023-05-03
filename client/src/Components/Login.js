@@ -19,7 +19,7 @@ export const Login = () => {
       <label>
         Username:{" "}
         <input type="text" onChange={(e) => setUser(e.target.value)} />
-      </label>{" "}
+      </label>
       <button onClick={handleLogin}>Login</button>
     </div>
   );

@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
+import { useAuth } from "../Utils/auth_context";
+import axios from "axios";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState(
     JSON.parse(localStorage.getItem("cartItems")) || {}
   );
 
+  const auth = useAuth();
+
   const removeFromCart = (item) => {
-    //localStorage.clear();
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || {};
     delete cartItems[item.productId];
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
@@ -26,8 +29,9 @@ const Cart = () => {
           <div className="d-flex flex-row justify-content-between">
             <img
               src={product.imageUrl}
-              height="80%"
-              width="50%"
+              height="200vh"
+              width="200hw"
+              style={{ marginRight: "30px" }}
               alt="product"
             />
             <div className="d-flex flex-column justify-content-start align-items-start ">
@@ -56,19 +60,46 @@ const Cart = () => {
     return total;
   };
 
+  const placeOrder = async () => {
+    const userId = auth.user;
+    const products = Object.values(cartItems);
+    const result = products.map(({ productId, name, imageUrl, price }) => ({
+      productId,
+      name,
+      imageUrl,
+      price,
+      quantity: 1,
+    }));
+
+    console.log({
+      userId,
+      result,
+    });
+    try {
+      await axios.post("http://ekart.com/orders/create", {
+        userId,
+        products: result,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+    setCartItems({});
+    localStorage.clear();
+  };
+
   useEffect(() => {}, []);
 
   return computeTotalPrice() > 0 ? (
-    <div class="row">
-      <div class="col-9">
+    <div className="row">
+      <div className="col-9">
         <div className="d-flex flex-row flex-wrap justify-content-start">
           {renderedProducts}
         </div>
       </div>
-      <div class="col  ">
+      <div className="col  ">
         <h4 className="m-3"> Cart Summary</h4>
         <h6 className="m-3"> Total Amount : ₹ {computeTotalPrice()}</h6>
-        <button className="btn btn-success ml-3" onClick={() => {}}>
+        <button className="btn btn-success ml-3" onClick={placeOrder}>
           Place Order
         </button>
       </div>

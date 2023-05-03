@@ -8,11 +8,11 @@ const Navbar = () => {
       <nav className="primary-nav d-flex flex-row justify-content-between align-items-between">
         <NavLink to="/">Ekart</NavLink>
         <div>
-          <NavLink to="create">Create</NavLink>
-          <NavLink to="orders">Orders</NavLink>
-          <NavLink to="cart">Cart</NavLink>
-          <NavLink to="profile">Profile</NavLink>
-          {!auth.user && <NavLink to="/login">Login</NavLink>}
+          <NavLink to="product-create">Create</NavLink>
+          <NavLink to="user-orders">Orders</NavLink>
+          <NavLink to="user-cart">Cart</NavLink>
+          <NavLink to="user-profile">Profile</NavLink>
+          {!auth.user && <NavLink to="/user-login">Login</NavLink>}
         </div>
       </nav>
       <Outlet />

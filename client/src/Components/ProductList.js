@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import ReviewCreate from "./ReviewCreate";
+
 import ReviewsList from "./ReviewsList";
 
 const ProductList = () => {
@@ -16,7 +16,6 @@ const ProductList = () => {
   };
 
   const addToCart = (item) => {
-    //localStorage.clear();
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || {};
     cartItems[item.productId] = item;
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
@@ -38,13 +37,13 @@ const ProductList = () => {
           <img
             src={product.imageUrl}
             style={{ marginBottom: "50px" }}
-            height="80%"
-            width="100%"
+            height="200vh"
+            width="200hw"
             alt="product"
           />
           <h3>{product.name}</h3>
           <h6>Price : ₹ {product.price}</h6>
-
+          <h6>Stock : {product.stock} Units</h6>
           <h6> Product Reviews</h6>
           <ReviewsList reviews={product.reviews} />
           {/* <ReviewCreate productId={product.productId} /> */}
