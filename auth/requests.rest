@@ -1,0 +1,45 @@
+GET http://localhost:3001/auth/test
+
+
+###
+POST http://localhost:3001/auth/register
+Content-Type: application/json
+
+{
+  "name":"Test",
+  "password":"password",
+  "isSeller":"false"
+}
+
+###
+POST http://localhost:3001/auth/login
+Content-Type: application/json
+
+{
+  "name":"Test",
+  "password":"password"
+}
+
+
+###
+GET http://localhost:3001/user/posts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiVGVzdCIsImlhdCI6MTY4MzQwNTYxOSwiZXhwIjoxNjgzNDA1NjQ0fQ.hm_N6mJqvqhh9AZza2yR56II_n7EPqiI2VztzIq5smE
+
+
+###
+
+POST http://localhost:3001/auth/new-token
+Content-Type: application/json
+
+{
+  "refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiVGVzdCIsInBhc3N3b3JkIjoiJDJiJDEwJG45ay52U09nZkNvaFg2NGhremFNdi4uYzFVUWxKa1M4ZDVvcW44QkNBem9mYWxSS2FMLmJxIiwiaXNTZWxsZXIiOnRydWUsImlhdCI6MTY4MzQwNTU5Mn0.EDQolGR6VscCVO9yh2aYfaCYmd15A8rGjEO5WjXjlp8"
+}
+
+
+###
+DELETE  http://localhost:3001/auth/logout
+Content-Type: application/json
+
+{
+  "refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiVGVzdCIsInBhc3N3b3JkIjoiJDJiJDEwJG45ay52U09nZkNvaFg2NGhremFNdi4uYzFVUWxKa1M4ZDVvcW44QkNBem9mYWxSS2FMLmJxIiwiaXNTZWxsZXIiOnRydWUsImlhdCI6MTY4MzQwNTU5Mn0.EDQolGR6VscCVO9yh2aYfaCYmd15A8rGjEO5WjXjlp8"
+}
