@@ -23,7 +23,7 @@ const Cart = () => {
           products: result,
         },
         {
-          headers: getHeaders(),
+          headers: await getHeaders(),
         }
       );
     } catch (err) {

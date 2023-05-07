@@ -54,12 +54,10 @@ app.post("/orders/create", authenticateToken, async (req, res) => {
   const orders = ordersList[userName] || [];
   for (let product of products) orders.push(product);
   ordersList[userName] = orders;
-  console.log(ordersList);
   res.status(201).send({});
 });
 
 app.get("/orders", authenticateToken, (req, res) => {
-  console.log(ordersList);
   res.send(ordersList[req.user.userName]);
 });
 

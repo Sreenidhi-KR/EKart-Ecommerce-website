@@ -21,7 +21,7 @@ const ProductCreate = () => {
           stock: productStock,
         },
         {
-          headers: getHeaders(),
+          headers: await getHeaders(),
         }
       );
     } catch (err) {}

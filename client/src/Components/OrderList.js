@@ -9,7 +9,7 @@ const OrderList = () => {
   const fetchOrders = async () => {
     try {
       const res = await axios.get(`http://ekart.com/orders`, {
-        headers: getHeaders(),
+        headers: await getHeaders(),
       });
       setOrders(res.data);
     } catch (err) {
