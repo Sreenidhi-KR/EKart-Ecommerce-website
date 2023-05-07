@@ -12,8 +12,9 @@ const products = {};
 const handleEvent = (type, data) => {
   if (type === "ProductCreated") {
     console.log("Event Received:", type);
-    const { productId, name, price, stock, imageUrl } = data;
+    const { productId, name, price, stock, imageUrl, sellerName } = data;
     products[productId] = {
+      sellerName,
       productId,
       name,
       stock,
@@ -40,7 +41,6 @@ const handleEvent = (type, data) => {
     review.status = status;
     review.content = content;
   }
-  console.log("products", type, products);
 };
 
 app.get("/products", (req, res) => {

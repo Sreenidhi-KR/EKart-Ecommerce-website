@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import ReviewCreate from "./ReviewCreate";
 import axios from "axios";
-import { useAuth } from "../Utils/auth_context";
+import getHeaders from "../Utils/jwt_header";
 
 const OrderList = () => {
   const [orders, setOrders] = useState({});
-  const auth = useAuth();
+
   const fetchOrders = async () => {
     try {
-      const res = await axios.get(`http://ekart.com/orders/${auth.user}`);
-      console.log(res.data);
+      const res = await axios.get(`http://ekart.com/orders`, {
+        headers: getHeaders(),
+      });
       setOrders(res.data);
     } catch (err) {
       console.log(err);

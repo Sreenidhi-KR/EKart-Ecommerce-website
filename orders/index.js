@@ -2,17 +2,19 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const { randomBytes } = require("crypto");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 const axios = require("axios");
 
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
+const ACCESS_TOKEN_SECRET =
+  "cfb62c7e5f017b1531ecf97e60c1e90b2927a5923a163a43e287e50ac21cab5192a03c6e1698bd7012153f985274cf8d6b9eb84b3efa10d895278b68442f89bf";
+
 let ordersList = {};
 /* ORDER LIST : 
-"1" : {
-    "userId":"1",
-    "products":
+"abc" : {
     [
       {
         "product_id":"001",
@@ -34,11 +36,9 @@ let ordersList = {};
 }
 */
 
-app.post("/orders/create", async (req, res) => {
+app.post("/orders/create", authenticateToken, async (req, res) => {
   /*
-    REQUEST FORMAT :
- {
-    "userId":"1",
+  {
     "products":[
       {
         "product_id":"001",
@@ -47,18 +47,39 @@ app.post("/orders/create", async (req, res) => {
         "price":"100"
       }
     ]
-}
-    */
-  const { userId, products } = req.body;
-  const orders = ordersList[userId] || [];
+  }
+  */
+  const { products } = req.body;
+  const userName = req.user.userName;
+  const orders = ordersList[userName] || [];
   for (let product of products) orders.push(product);
-  ordersList[userId] = orders;
+  ordersList[userName] = orders;
   console.log(ordersList);
   res.status(201).send({});
 });
 
-app.get("/orders/:userId", (req, res) => {
-  res.send(ordersList[req.params.userId]);
+app.get("/orders", authenticateToken, (req, res) => {
+  console.log(ordersList);
+  res.send(ordersList[req.user.userName]);
 });
+
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (token == null) return res.sendStatus(401);
+  try {
+    jwt.verify(token, ACCESS_TOKEN_SECRET, (err, user) => {
+      console.log(err);
+      if (err) {
+        return res.sendStatus(403);
+      }
+      //set user from jwt token
+      req.user = user;
+      next();
+    });
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 app.listen(4004, console.log("Orders listening on port 4004"));

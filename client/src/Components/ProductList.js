@@ -19,7 +19,6 @@ const ProductList = () => {
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || {};
     cartItems[item.productId] = item;
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
-    console.log(JSON.parse(localStorage.getItem("cartItems")));
   };
 
   useEffect(() => {
@@ -44,6 +43,7 @@ const ProductList = () => {
           <h3>{product.name}</h3>
           <h6>Price : ₹ {product.price}</h6>
           <h6>Stock : {product.stock} Units</h6>
+          <h6>Seller : {product.sellerName}</h6>
           <h6> Product Reviews</h6>
           <ReviewsList reviews={product.reviews} />
           {/* <ReviewCreate productId={product.productId} /> */}

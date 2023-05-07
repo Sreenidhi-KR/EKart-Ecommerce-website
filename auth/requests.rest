@@ -2,11 +2,11 @@ GET http://localhost:3001/auth/test
 
 
 ###
-POST http://localhost:3001/auth/register
+POST http://ekart.com/auth/register
 Content-Type: application/json
 
 {
-  "name":"Test",
+  "userName":"Test",
   "password":"password",
   "isSeller":"false"
 }
@@ -16,7 +16,7 @@ POST http://localhost:3001/auth/login
 Content-Type: application/json
 
 {
-  "name":"Test",
+  "userName":"Test",
   "password":"password"
 }
 

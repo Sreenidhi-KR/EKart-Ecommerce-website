@@ -1,20 +1,51 @@
-import React, { useEffect, useState } from "react";
-import { useAuth } from "../Utils/auth_context";
+import React, { useState } from "react";
 import axios from "axios";
+import getHeaders from "../Utils/jwt_header";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState(
     JSON.parse(localStorage.getItem("cartItems")) || {}
   );
 
-  const auth = useAuth();
+  const placeOrder = async () => {
+    const products = Object.values(cartItems);
+    const result = products.map(({ productId, name, imageUrl, price }) => ({
+      productId,
+      name,
+      imageUrl,
+      price,
+      quantity: 1,
+    }));
+    try {
+      await axios.post(
+        "http://ekart.com/orders/create",
+        {
+          products: result,
+        },
+        {
+          headers: getHeaders(),
+        }
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    setCartItems({});
+    localStorage.removeItem("cartItems");
+  };
 
   const removeFromCart = (item) => {
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || {};
     delete cartItems[item.productId];
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
     setCartItems(cartItems);
-    console.log(JSON.parse(localStorage.getItem("cartItems")));
+  };
+
+  const computeTotalPrice = () => {
+    let total = 0;
+    Object.values(cartItems).forEach((product) => {
+      total += parseInt(product.price);
+    });
+    return total;
   };
 
   const renderedProducts = Object.values(cartItems).map((product) => {
@@ -51,43 +82,6 @@ const Cart = () => {
       </div>
     );
   });
-
-  const computeTotalPrice = () => {
-    let total = 0;
-    Object.values(cartItems).forEach((product) => {
-      total += parseInt(product.price);
-    });
-    return total;
-  };
-
-  const placeOrder = async () => {
-    const userId = auth.user;
-    const products = Object.values(cartItems);
-    const result = products.map(({ productId, name, imageUrl, price }) => ({
-      productId,
-      name,
-      imageUrl,
-      price,
-      quantity: 1,
-    }));
-
-    console.log({
-      userId,
-      result,
-    });
-    try {
-      await axios.post("http://ekart.com/orders/create", {
-        userId,
-        products: result,
-      });
-    } catch (err) {
-      console.log(err);
-    }
-    setCartItems({});
-    localStorage.clear();
-  };
-
-  useEffect(() => {}, []);
 
   return computeTotalPrice() > 0 ? (
     <div className="row">

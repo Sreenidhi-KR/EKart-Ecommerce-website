@@ -4,23 +4,127 @@ import { useAuth } from "../Utils/auth_context";
 
 export const Login = () => {
   const [user, setUser] = useState("");
+  const [register, setRegister] = useState(false);
+  const [isSeller, setIsSeller] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const auth = useAuth();
 
   const redirectPath = location.state?.path || "/";
+  const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    auth.login(user);
+  const handleLogin = async (event) => {
+    event.preventDefault();
+
+    const credentials = {
+      userName: user,
+      password,
+    };
+
+    await auth.login(credentials);
     navigate(redirectPath, { replace: true });
   };
+
+  const handleRegister = async (event) => {
+    event.preventDefault();
+
+    const credentials = {
+      userName: user,
+      password,
+      isSeller,
+    };
+
+    await auth.register(credentials);
+    setRegister(false);
+  };
+
   return (
-    <div>
-      <label>
-        Username:{" "}
-        <input type="text" onChange={(e) => setUser(e.target.value)} />
-      </label>
-      <button onClick={handleLogin}>Login</button>
+    <div className="Auth-form-container">
+      <form className="Auth-form">
+        <div className="Auth-form-content">
+          {/* <h3>{register ? "Register" : "Log In"}</h3> */}
+          <h2> Ekart</h2>
+          <div className="form-group mt-3">
+            <h6>Username</h6>
+            <input
+              type="text"
+              required
+              className="form-control mt-1"
+              placeholder="Enter Username"
+              value={user}
+              onChange={(event) => setUser(event.target.value)}
+            />
+          </div>
+          <div className="form-group mt-3">
+            <h6>Password</h6>
+            <input
+              type="password"
+              className="form-control mt-1"
+              placeholder="Enter password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+            />
+          </div>
+          {register ? (
+            <div className="form-group mt-3">
+              <label>
+                <input
+                  style={{ marginRight: 10 }}
+                  type="checkbox"
+                  checked={isSeller}
+                  onChange={(e) => {
+                    setIsSeller(e.target.checked);
+                  }}
+                />
+                Register as Seller
+              </label>
+            </div>
+          ) : null}
+
+          <button
+            style={{
+              border: "none",
+              background: "none",
+              padding: 0,
+              margin: 0,
+              fontSize: "12px",
+              textDecoration: "none",
+              cursor: "pointer",
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              console.log(register);
+              setRegister((old) => !old);
+            }}
+          >
+            {!register
+              ? "Dont have an Account ? Register Here"
+              : "Back to Log In"}
+          </button>
+
+          {register ? (
+            <div className="d-grid mt-5">
+              <button
+                type="submit"
+                className="btn btn-primary"
+                onClick={(e) => handleRegister(e)}
+              >
+                Register
+              </button>
+            </div>
+          ) : (
+            <div className="d-grid mt-5">
+              <button
+                type="submit"
+                className="btn btn-primary"
+                onClick={(e) => handleLogin(e)}
+              >
+                Login
+              </button>
+            </div>
+          )}
+        </div>
+      </form>
     </div>
   );
 };

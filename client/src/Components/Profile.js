@@ -9,12 +9,12 @@ const Profile = () => {
 
   const handleLogout = () => {
     auth.logout();
-    navigate("/login");
+    navigate("/user-login");
   };
 
   return (
     <div>
-      Welcome {auth.user}
+      Welcome {auth.user.userName}
       <button onClick={handleLogout}>Logout</button>
     </div>
   );

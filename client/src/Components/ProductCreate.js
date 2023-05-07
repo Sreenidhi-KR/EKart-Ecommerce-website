@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import getHeaders from "../Utils/jwt_header";
 
 const ProductCreate = () => {
   const [productName, setProductName] = useState("");
@@ -11,12 +12,18 @@ const ProductCreate = () => {
     event.preventDefault();
 
     try {
-      await axios.post("http://ekart.com/product/create", {
-        name: productName,
-        price: productPrice,
-        imageUrl: productImage,
-        stock: productStock,
-      });
+      await axios.post(
+        "http://ekart.com/product/create",
+        {
+          name: productName,
+          price: productPrice,
+          imageUrl: productImage,
+          stock: productStock,
+        },
+        {
+          headers: getHeaders(),
+        }
+      );
     } catch (err) {}
 
     setProductName("");

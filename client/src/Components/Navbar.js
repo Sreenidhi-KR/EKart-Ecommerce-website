@@ -12,7 +12,6 @@ const Navbar = () => {
           <NavLink to="user-orders">Orders</NavLink>
           <NavLink to="user-cart">Cart</NavLink>
           <NavLink to="user-profile">Profile</NavLink>
-          {!auth.user && <NavLink to="/user-login">Login</NavLink>}
         </div>
       </nav>
       <Outlet />
