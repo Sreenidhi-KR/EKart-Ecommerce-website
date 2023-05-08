@@ -22,6 +22,7 @@ export const Login = () => {
     };
 
     await auth.login(credentials);
+
     navigate(redirectPath, { replace: true });
   };
 
@@ -34,8 +35,7 @@ export const Login = () => {
       isSeller,
     };
 
-    await auth.register(credentials);
-    setRegister(false);
+    await auth.register(credentials, setRegister);
   };
 
   return (

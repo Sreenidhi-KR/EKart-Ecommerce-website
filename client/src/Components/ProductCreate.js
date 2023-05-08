@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import getHeaders from "../Utils/jwt_header";
+import { toast } from "react-toastify";
 
 const ProductCreate = () => {
   const [productName, setProductName] = useState("");
@@ -24,7 +25,10 @@ const ProductCreate = () => {
           headers: await getHeaders(),
         }
       );
-    } catch (err) {}
+      toast.success("Added Sucessfully");
+    } catch (err) {
+      toast.error("Error while creating");
+    }
 
     setProductName("");
     setProductPrice("");

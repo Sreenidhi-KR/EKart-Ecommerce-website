@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import getHeaders from "../Utils/jwt_header";
+import { toast } from "react-toastify";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState(
@@ -26,7 +27,9 @@ const Cart = () => {
           headers: await getHeaders(),
         }
       );
+      toast.success("Order Successful");
     } catch (err) {
+      toast.error("Error while Ordering");
       console.log(err);
     }
     setCartItems({});

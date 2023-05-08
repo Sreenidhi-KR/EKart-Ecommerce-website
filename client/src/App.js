@@ -9,10 +9,13 @@ import { AuthProvider } from "./Utils/auth_context";
 import { Login } from "./Components/Login";
 import Profile from "./Components/Profile";
 import { RequireAuth } from "./Utils/require_auth";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
   return (
     <AuthProvider>
+      <ToastContainer position="bottom-right" autoClose={2500} />
       <Routes>
         <Route
           element={
