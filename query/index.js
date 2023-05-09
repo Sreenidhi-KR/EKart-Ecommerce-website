@@ -41,6 +41,10 @@ const handleEvent = (type, data) => {
     review.status = status;
     review.content = content;
   }
+
+  if(type === "OrderPla"){
+    
+  }
 };
 
 app.get("/products", (req, res) => {

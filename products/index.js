@@ -1,3 +1,5 @@
+/** @format */
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const { randomBytes } = require("crypto");
@@ -38,12 +40,17 @@ app.post("/product/create", authenticateToken, async (req, res) => {
       stock,
     },
   });
+  console.log("\n PRODUCT CREATED :", products[productId]);
   res.status(201).send(products[productId]);
 });
 
 app.post("/events", (req, res) => {
   //console.log("Received Event", req.body.type);
   res.send({});
+});
+
+app.get("/", (req, res) => {
+  res.send({ products });
 });
 
 function authenticateToken(req, res, next) {
