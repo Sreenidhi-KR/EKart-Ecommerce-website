@@ -64,8 +64,14 @@ app.post("/orders/create", authenticateToken, async (req, res) => {
 
   //Check if Stock is avaliable
   for (let product of products) {
-    if (product.quantity < productsInventory[product.productId].stock)
-      res.status(401).send({ message: "Sorry, Out of Stock" });
+    if (
+      Number(productsInventory[product.productId].stock) -
+        Number(product.quantity) <
+      0
+    ) {
+      console.log("\n\t ERROR: Inventroy OUT of STOCK");
+      return res.status(401).send({ message: "Sorry, Out of Stock" });
+    }
   }
   //Update the stock
   for (let product of products) {
@@ -79,6 +85,18 @@ app.post("/orders/create", authenticateToken, async (req, res) => {
   const orders = ordersList[userName] || [];
   for (let product of products) orders.push(product);
   ordersList[userName] = orders;
+
+  //Broadcast the OrderCreated to PRODUCTS and QUERY services
+  try {
+    await axios.post("http://eventbus-srv:4005/events", {
+      type: "OrderCreated",
+      data: {
+        products,
+      },
+    });
+  } catch (err) {
+    console.log("\n ERROR : Couldnot Broadcase ORDERCREATED ".err);
+  }
   res.status(201).send({});
 });
 
@@ -89,7 +107,7 @@ app.get("/orders", authenticateToken, (req, res) => {
 app.post("/events", (req, res) => {
   const { type, data } = req.body;
 
-  console.log("Recieved Event", req.body);
+  console.log("---------------Recieved Event", req.body);
   if (type === "ProductCreated") {
     const { productId, name, stock } = data;
     productsInventory[productId] = { productId, name, stock };

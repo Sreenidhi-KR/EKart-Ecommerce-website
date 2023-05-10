@@ -1,3 +1,5 @@
+/** @format */
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -42,8 +44,13 @@ const handleEvent = (type, data) => {
     review.content = content;
   }
 
-  if(type === "OrderPla"){
-    
+  if (type === "OrderCreated") {
+    const orderedProducts = data.products;
+    for (let orderedProduct of orderedProducts) {
+      products[orderedProduct.productId].stock =
+        Number(products[orderedProduct.productId].stock) -
+        Number(orderedProduct.quantity);
+    }
   }
 };
 
@@ -60,7 +67,7 @@ app.post("/events", (req, res) => {
 });
 
 app.listen(4002, async () => {
-  console.log("Query Listening on 4002");
+  console.log("Query Listening on : 4002");
   // try {
   //   const res = await axios.get("http://eventbus-srv:4005/events");
 

@@ -45,7 +45,16 @@ app.post("/product/create", authenticateToken, async (req, res) => {
 });
 
 app.post("/events", (req, res) => {
-  //console.log("Received Event", req.body.type);
+  console.log("Received Event", req.body.type);
+  const { data, type } = req.body;
+  if (type === "OrderCreated") {
+    const orderedProducts = data.products;
+    for (let orderedProduct of orderedProducts) {
+      products[orderedProduct.productId].stock =
+        Number(products[orderedProduct.productId].stock) -
+        Number(orderedProduct.quantity);
+    }
+  }
   res.send({});
 });
 
@@ -73,5 +82,5 @@ function authenticateToken(req, res, next) {
 }
 
 app.listen(4000, () => {
-  console.log("Products Listening on 4000");
+  console.log("Products Listening on - 4000");
 });
