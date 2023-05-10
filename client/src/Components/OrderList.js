@@ -19,30 +19,34 @@ const OrderList = () => {
 
   const renderedOrders = Object.values(orders).map((order) => (
     <div>
-      <div className="d-flex flex-column flex-wrap justify-content-start align-items-start">
-        <div style={{ marginLeft: 20, marginTop: 20 }}>
+      <div className="">
+        <div style={{ marginLeft: 20, marginTop: 5 }}>
           <h6> Order Id : {order.order_id}</h6>
           <h6> Order Total : ₹ {order.total}</h6>
         </div>
-        <div className="d-flex flex-row flex-wrap container ">
+        <div className="d-flex flex-row flex-wrap justify-content-start ">
           {order.products.map((product) => (
             <div
-              className="container card justify-content-center align-items-center"
-              style={{ width: "30%", height: "40%", margin: "20px" }}
+              className="m-2 card justify-content-around align-items-around"
+              style={{ width: "31%", height: "40%" }}
               key={product.productId}
             >
               <div className="card-body">
-                <img
-                  src={product.imageUrl}
-                  style={{ marginBottom: "50px" }}
-                  height="200vh"
-                  width="200hw"
-                  alt="product"
-                />
-                <h3>{product.name}</h3>
-                <h6>Price : ₹ {product.price}</h6>
-                <h6>Quantity : {product.quantity} Units</h6>
-                <ReviewCreate productId={product.productId} />
+                <div className="d-flex flex-row justify-content-around">
+                  <img
+                    src={product.imageUrl}
+                    style={{ marginRight: "20px" }}
+                    width="50%"
+                    height="90%"
+                    alt="product"
+                  />
+                  <div className="d-flex flex-column justify-content-start align-items-start ">
+                    <h3>{product.name}</h3>
+                    <h6>Price : ₹ {product.price}</h6>
+                    <h6>Quantity : {product.quantity} Units</h6>
+                    <ReviewCreate productId={product.productId} />
+                  </div>
+                </div>
               </div>
             </div>
           ))}

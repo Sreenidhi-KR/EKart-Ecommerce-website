@@ -39,28 +39,6 @@ let ordersList = {};
                 }
             ]
         }
-    },
-    "user_2": {
-        "95bfc3a6": {
-            "order_id": "95bfc3a6",
-            "total": 100,
-            "products": [
-                {
-                    "productId": "b3018b7c",
-                    "name": "yoyo",
-                    "imageUrl": "",
-                    "price": "10",
-                    "quantity": 1
-                },
-                {
-                    "productId": "7308f9e3",
-                    "name": "pillow",
-                    "imageUrl": "",
-                    "price": "90",
-                    "quantity": 1
-                }
-            ]
-        }
     }
 }
 
@@ -150,7 +128,7 @@ app.post("/orders/create", authenticateToken, async (req, res) => {
       },
     });
   } catch (err) {
-    console.log("\n ERROR : Couldnot Broadcase ORDERCREATED ".err);
+    console.log("ERROR : Couldnot Broadcase ORDERCREATED ", err);
   }
   res.status(201).send({});
 });
@@ -183,7 +161,7 @@ app.post("/updateStock", async (req, res) => {
 app.post("/events", (req, res) => {
   const { type, data } = req.body;
 
-  console.log("---------------Recieved Event", req.body);
+  console.log("Recieved Event", req.body);
   if (type === "ProductCreated") {
     const { productId, name, stock } = data;
     productsInventory[productId] = { productId, name, stock };
@@ -199,7 +177,7 @@ function authenticateToken(req, res, next) {
   if (token == null) return res.sendStatus(401);
   try {
     jwt.verify(token, ACCESS_TOKEN_SECRET, (err, user) => {
-      console.log(err);
+      console.log("erre", err);
       if (err) {
         return res.sendStatus(403);
       }
@@ -208,7 +186,7 @@ function authenticateToken(req, res, next) {
       next();
     });
   } catch (err) {
-    console.log(err);
+    console.log("err", err);
   }
 }
 
