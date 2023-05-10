@@ -67,7 +67,7 @@ app.post("/events", (req, res) => {
 });
 
 app.listen(4002, async () => {
-  console.log("Query Listening on : 4002");
+  console.log("Query Listening on :  4002");
   // try {
   //   const res = await axios.get("http://eventbus-srv:4005/events");
 
