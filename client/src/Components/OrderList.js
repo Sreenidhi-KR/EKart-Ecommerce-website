@@ -60,7 +60,9 @@ const OrderList = () => {
     <div className="d-flex flex-column flex-wrap justify-content-start">
       {Object.keys(orders).length > 0 ? (
         <h1 className="m-3">My Orders</h1>
-      ) : null}
+      ) : (
+        <center className="mt-5">No Orders</center>
+      )}
       {renderedOrders}
     </div>
   );
