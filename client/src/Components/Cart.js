@@ -32,7 +32,7 @@ const Cart = () => {
           headers: await getHeaders(),
         }
       );
-      toast.success("Order Successful");
+      toast.info("Order Created");
     } catch (err) {
       toast.error("Error while Ordering");
       console.log(err);

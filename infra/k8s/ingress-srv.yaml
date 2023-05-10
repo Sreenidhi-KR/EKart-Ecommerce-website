@@ -17,6 +17,20 @@ spec:
                 name: products-srv
                 port:
                   number: 4000
+          - path: /product/update
+            pathType: Prefix
+            backend:
+              service:
+                name: products-srv
+                port:
+                  number: 4000
+          - path: /product/seller
+            pathType: Prefix
+            backend:
+              service:
+                name: products-srv
+                port:
+                  number: 4000
           - path: /products
             pathType: Prefix
             backend:

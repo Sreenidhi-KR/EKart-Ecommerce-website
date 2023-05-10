@@ -9,7 +9,7 @@ const Navbar = () => {
       <nav className="primary-nav d-flex flex-row justify-content-between align-items-between">
         <NavLink to="seller-home">Ekart</NavLink>
         <div className="d-flex flex-row">
-          <NavLink to="product-create">Create</NavLink>
+          <NavLink to="product-create">Add Listing</NavLink>
           <Profile />
         </div>
       </nav>

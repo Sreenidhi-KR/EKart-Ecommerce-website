@@ -44,6 +44,33 @@ app.post("/product/create", authenticateToken, async (req, res) => {
   res.status(201).send(products[productId]);
 });
 
+app.post("/product/update", authenticateToken, async (req, res) => {
+  const { name, price, stock, imageUrl, productId } = req.body;
+  const sellerName = req.user.userName;
+
+  products[productId] = {
+    productId,
+    sellerName,
+    name,
+    price,
+    imageUrl,
+    stock,
+  };
+
+  await axios.post("http://eventbus-srv:4005/events", {
+    type: "ProductUpdated",
+    data: {
+      sellerName,
+      productId,
+      name,
+      price,
+      imageUrl,
+      stock,
+    },
+  });
+  res.status(201).send(products[productId]);
+});
+
 app.post("/events", async (req, res) => {
   console.log("Received Event", req.body.type);
   const { data, type } = req.body;
@@ -94,11 +121,19 @@ app.post("/events", async (req, res) => {
     }
   }
 
-  if (type === "StockUpdated") {
-    const { new_stock, productId } = data;
-    products[productId].stock = new_stock;
-  }
   res.send({});
+});
+
+app.get("/product/seller", authenticateToken, (req, res) => {
+  const filteredProducts = {};
+
+  Object.keys(products)
+    .filter((key) => products[key].sellerName === req.user.userName)
+    .forEach((key) => {
+      filteredProducts[key] = products[key];
+    });
+
+  res.send({ ...filteredProducts });
 });
 
 app.get("/", (req, res) => {

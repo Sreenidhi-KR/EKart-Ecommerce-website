@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ReviewsList from "./ReviewsList";
+import { toast } from "react-toastify";
 
 const ProductList = () => {
   const [products, setProducts] = useState({});
@@ -19,6 +20,7 @@ const ProductList = () => {
     item["quantity"] = 1;
     cartItems[item.productId] = item;
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    toast.success("Added To Cart");
   };
 
   useEffect(() => {

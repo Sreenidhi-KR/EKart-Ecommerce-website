@@ -18,7 +18,7 @@ const OrderList = () => {
   };
 
   const renderedOrders = Object.values(orders).map((order) => (
-    <div>
+    <div key={order.order_id}>
       <div>
         <div style={{ marginLeft: 20, marginTop: 5 }}>
           <h6> Order Id : {order.order_id}</h6>
@@ -35,7 +35,7 @@ const OrderList = () => {
                 backgroundColor:
                   order.status === "Accepted" ? "white" : "#d9d9d9",
               }}
-              key={product.productId}
+              key={product.productId + order.order_id}
             >
               <div className="card-body">
                 <div className="d-flex flex-row justify-content-around">
