@@ -22,7 +22,6 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (credentials, setRegister) => {
     try {
-      console.log(`http://ekart.com/auth/register`, credentials);
       const res = await axios.post(
         `http://ekart.com/auth/register`,
         credentials

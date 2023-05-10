@@ -93,7 +93,6 @@ export const Login = () => {
             }}
             onClick={(e) => {
               e.preventDefault();
-              console.log(register);
               setRegister((old) => !old);
             }}
           >

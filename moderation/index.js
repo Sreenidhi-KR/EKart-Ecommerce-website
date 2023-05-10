@@ -11,14 +11,6 @@ app.post("/events", async (req, res) => {
   if (type === "ReviewCreated") {
     console.log(type);
     const status = data.content.includes("orange") ? "rejected" : "approved";
-
-    console.log("RC", {
-      reviewId: data.reviewId,
-      productId: data.productId,
-      status,
-      content: data.content,
-    });
-
     await axios.post("http://eventbus-srv:4005/events", {
       type: "ReviewModerated",
       data: {

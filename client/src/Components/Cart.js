@@ -60,7 +60,6 @@ const Cart = () => {
   });
 
   const renderedProducts = Object.values(cartItems).map((product) => {
-    console.log(product);
     return (
       <div
         className="card justify-content-center align-items-center"

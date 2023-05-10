@@ -41,7 +41,6 @@ app.post("/product/create", authenticateToken, async (req, res) => {
       stock,
     },
   });
-  console.log("\n PRODUCT CREATED :", products[productId]);
   res.status(201).send(products[productId]);
 });
 

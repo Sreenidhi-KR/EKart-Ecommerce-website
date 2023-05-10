@@ -16,7 +16,6 @@ const getHeaders = async () => {
         const res = await axios.post("http://ekart.com/auth/new-token", {
           refreshToken,
         });
-        console.log("new", res.data);
         let user = JSON.parse(localStorage.getItem("user"));
         user.accessToken = res.data.accessToken;
         localStorage.setItem("user", JSON.stringify(user));

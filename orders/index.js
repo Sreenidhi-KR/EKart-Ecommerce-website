@@ -105,7 +105,7 @@ app.post("/orders/create", authenticateToken, async (req, res) => {
         Number(product.quantity) <
       0
     ) {
-      console.log("\n\t ERROR: Inventroy OUT o ");
+      console.log("Out of Stock");
       return res
         .status(401)
         .send({ message: "Sorry,1 or more items are Out of Stock" });

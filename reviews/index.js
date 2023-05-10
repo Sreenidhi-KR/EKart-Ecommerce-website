@@ -49,12 +49,6 @@ app.post("/events", async (req, res) => {
       return review.reviewId === reviewId;
     });
     review.status = status;
-    console.log("RM", {
-      reviewId,
-      status,
-      productId,
-      content,
-    });
     await axios.post("http://eventbus-srv:4005/events", {
       type: "ReviewUpdated",
       data: {
