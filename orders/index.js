@@ -16,43 +16,79 @@ const ACCESS_TOKEN_SECRET =
 
 let ordersList = {};
 /* ORDER LIST : (Currently) (Need to add total and order_id)
-"user_id" : {
-    [
-      {
-        "product_id":"001",
-        "product_name":"Bananna",
-        "product_url" : "/abc.png "
-        "quantity":"10",
-        "price":"100"
-
-      },
-      {
-        "product_id":"001",
-        "product_name":"Shampoo",
-        "product_url" : "/abc.png "
-        "quantity":"20",
-        "price":"1000"
-
-      }
-    ]
-
+/*
+{
+    "user_1": {
+        "0e576b84": {
+            "order_id": "0e576b84",
+            "total": 110,
+            "products": [
+                {
+                    "productId": "b3018b7c",
+                    "name": "yoyo",
+                    "imageUrl": "",
+                    "price": "10",
+                    "quantity": 1
+                },
+                {
+                    "productId": "83fcd35a",
+                    "name": "batter",
+                    "imageUrl": "",
+                    "price": "100",
+                    "quantity": 1
+                }
+            ]
+        }
+    },
+    "user_2": {
+        "95bfc3a6": {
+            "order_id": "95bfc3a6",
+            "total": 100,
+            "products": [
+                {
+                    "productId": "b3018b7c",
+                    "name": "yoyo",
+                    "imageUrl": "",
+                    "price": "10",
+                    "quantity": 1
+                },
+                {
+                    "productId": "7308f9e3",
+                    "name": "pillow",
+                    "imageUrl": "",
+                    "price": "90",
+                    "quantity": 1
+                }
+            ]
+        }
+    }
 }
+
 */
 
 let productsInventory = {};
 /*
   {
-      {product_id,name,stock}
-    
-  }
+    "dd2711a6": {
+        "productId": "dd2711a6",
+        "name": "bat",
+        "stock": "12"
+    },
+    "13ff86fb": {
+        "productId": "13ff86fb",
+        "name": "yoyo",
+        "stock": "89"
+    }
+}
 */
 
+//For Creating new Orders
 app.post("/orders/create", authenticateToken, async (req, res) => {
   /*
   {
     "products":[
       {
-        "product_id":"001",
+        "productId":"001",
         "product_name":"Bananna",
         "quantity":"10",
         "price":"100"
@@ -69,22 +105,41 @@ app.post("/orders/create", authenticateToken, async (req, res) => {
         Number(product.quantity) <
       0
     ) {
-      console.log("\n\t ERROR: Inventroy OUT of STOCK");
-      return res.status(401).send({ message: "Sorry, Out of Stock" });
+      console.log("\n\t ERROR: Inventroy OUT o ");
+      return res
+        .status(401)
+        .send({ message: "Sorry,1 or more items are Out of Stock" });
     }
   }
-  //Update the stock
+  //1)Update the stock
+  //2)Calculate Order total
+  let total = 0;
   for (let product of products) {
+    total += Number(product.quantity) * Number(product.price);
     productsInventory[product.productId].stock =
       Number(productsInventory[product.productId].stock) -
       Number(product.quantity);
   }
+  console.log("\n TOTAL for the order : ", total);
 
-  //Create an Order
+  //Create an Order-------------------
   const userName = req.user.userName;
-  const orders = ordersList[userName] || [];
+  if (!ordersList[userName]) ordersList[userName] = {}; //Creating a new user profile
+
+  console.log("\n\t ALL ORDERLIST : \n", ordersList);
+  console.log("\n\t USER : \n", ordersList[userName]);
+  const order_id = randomBytes(4).toString("hex");
+  ordersList[userName][order_id] = {}; //Created empty obj as w/o this line it was overwriting existing entry (always only 1 prod was avaliable)
+  // const order_id =  `OID${ordersList[userName].length}`
+
+  ordersList[userName][order_id] = {
+    order_id,
+    total,
+    products: [],
+  };
+  const orders = [];
   for (let product of products) orders.push(product);
-  ordersList[userName] = orders;
+  ordersList[userName][order_id].products = orders;
 
   //Broadcast the OrderCreated to PRODUCTS and QUERY services
   try {
@@ -102,6 +157,27 @@ app.post("/orders/create", authenticateToken, async (req, res) => {
 
 app.get("/orders", authenticateToken, (req, res) => {
   res.send(ordersList[req.user.userName]);
+});
+
+app.post("/updateStock", async (req, res) => {
+  const { productId, new_stock } = req.body;
+  productsInventory[productId].stock = new_stock;
+  console.log("\n\t Updated Stock", productsInventory[productId]);
+
+  //Broadcast the StockUpdated to PRODUCTS and QUERY services
+  try {
+    await axios.post("http://eventbus-srv:4005/events", {
+      type: "StockUpdated",
+      data: {
+        productId,
+        new_stock,
+      },
+    });
+  } catch (err) {
+    console.log("\n ERROR : Couldnot Broadcase StockUpdated ".err);
+  }
+
+  res.status(201).send(productsInventory[productId]);
 });
 
 app.post("/events", (req, res) => {
@@ -145,4 +221,4 @@ app.get("/productsInventory", (req, res) => {
   res.send(productsInventory);
 });
 
-app.listen(4004, console.log("Orders listening on port  4004"));
+app.listen(4004, console.log("Orders listening on port 4004"));

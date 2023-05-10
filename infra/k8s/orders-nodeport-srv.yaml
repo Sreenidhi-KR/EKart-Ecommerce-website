@@ -1,3 +1,5 @@
+# @format
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -11,4 +13,4 @@ spec:
       protocol: TCP
       port: 4004
       targetPort: 4004
-      nodePort: 32323
+      nodePort: 32221

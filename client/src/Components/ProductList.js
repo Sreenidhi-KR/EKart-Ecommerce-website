@@ -1,6 +1,8 @@
+/** @format */
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
+import QuantityButton from "./QuantityButton";
 import ReviewsList from "./ReviewsList";
 
 const ProductList = () => {
@@ -26,6 +28,7 @@ const ProductList = () => {
   }, []);
 
   const renderedProducts = Object.values(products).map((product) => {
+    let quantity = 1;
     return (
       <div
         className="container card justify-content-center align-items-center"
@@ -47,13 +50,24 @@ const ProductList = () => {
           <h6> Product Reviews</h6>
           <ReviewsList reviews={product.reviews} />
           {/* <ReviewCreate productId={product.productId} /> */}
-          <button
-            onClick={() => addToCart(product)}
-            className="btn btn-primary"
-            style={{ alignSelf: "flex-end" }}
-          >
-            Add To Cart
-          </button>
+          {product.stock > 0 ? (
+            <>
+              <QuantityButton
+                maxStock={product.stock}
+                updateStock={(currentStock) => {
+                  quantity = currentStock;
+                }}
+              />
+              <button
+                //*******************Need to Add Quantity to Cart
+                onClick={() => addToCart(product)}
+                className="btn btn-primary"
+                style={{ alignSelf: "flex-end" }}
+              >
+                Add To Cart
+              </button>
+            </>
+          ) : null}
         </div>
       </div>
     );
