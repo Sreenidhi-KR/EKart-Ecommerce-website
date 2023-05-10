@@ -105,7 +105,7 @@ app.post("/orders/create", authenticateToken, async (req, res) => {
         Number(product.quantity) <
       0
     ) {
-      console.log("Out of Stock");
+      console.log("\n\t ERROR: Inventroy OUT o ");
       return res
         .status(401)
         .send({ message: "Sorry,1 or more items are Out of Stock" });
@@ -161,7 +161,12 @@ app.get("/orders", authenticateToken, (req, res) => {
 
 app.post("/updateStock", async (req, res) => {
   const { productId, new_stock } = req.body;
-  productsInventory[productId].stock = new_stock;
+  try {
+    productsInventory[productId].stock = new_stock;
+  } catch (err) {
+    console.log("\n\nERROR :  Item Does not Exists", err.message);
+    return res.status(401).send({ message: "Invalid Product" });
+  }
   console.log("\n\t Updated Stock", productsInventory[productId]);
 
   //Broadcast the StockUpdated to PRODUCTS and QUERY services
@@ -174,7 +179,7 @@ app.post("/updateStock", async (req, res) => {
       },
     });
   } catch (err) {
-    console.log("\n ERROR : Couldnot Broadcase StockUpdated ".err);
+    console.log("\n ERROR : Couldnot Broadcase StockUpdated ", err.message);
   }
 
   res.status(201).send(productsInventory[productId]);
