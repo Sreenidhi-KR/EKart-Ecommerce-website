@@ -1,15 +1,20 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const ReviewCreate = ({ productId }) => {
   const [content, setContent] = useState("");
 
   const onSubmit = async (event) => {
     event.preventDefault();
-
-    await axios.post(`http://ekart.com/product/${productId}/reviews`, {
-      content,
-    });
+    try {
+      await axios.post(`http://ekart.com/product/${productId}/reviews`, {
+        content,
+      });
+      toast.success("Review Added");
+    } catch (err) {
+      toast.error("Could not add review");
+    }
 
     setContent("");
   };

@@ -19,7 +19,11 @@ const ReviewsList = ({ reviews }) => {
     return <li key={review.reviewId}>{content}</li>;
   });
 
-  return <ul>{renderedReviews}</ul>;
+  return (
+    <ul>
+      {renderedReviews?.length > 0 ? renderedReviews : <h6> No Reviews</h6>}
+    </ul>
+  );
 };
 
 export default ReviewsList;

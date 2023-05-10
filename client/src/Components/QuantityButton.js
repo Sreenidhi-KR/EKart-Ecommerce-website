@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 
-const QuantityButton = ({ maxStock, updateStock }) => {
-  const [quantity, setQuantity] = useState(1);
+const QuantityButton = ({ maxStock, updateStock, selcted_quantity = 1 }) => {
+  const [quantity, setQuantity] = useState(selcted_quantity);
 
   const incrementQuantity = () => {
     if (quantity < maxStock) {
@@ -22,9 +22,20 @@ const QuantityButton = ({ maxStock, updateStock }) => {
 
   return (
     <div>
-      <button onClick={decrementQuantity}>-</button>
+      <h6> Select Quantity</h6>
+      <button
+        className="btn btn-secondary mr-1 mb-2 px-2 py-0"
+        onClick={decrementQuantity}
+      >
+        -
+      </button>
       <span>{quantity}</span>
-      <button onClick={incrementQuantity}>+</button>
+      <button
+        className="btn btn-secondary ml-1 mb-2 px-2 py-0"
+        onClick={incrementQuantity}
+      >
+        +
+      </button>
     </div>
   );
 };

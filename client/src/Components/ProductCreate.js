@@ -4,6 +4,8 @@ import getHeaders from "../Utils/jwt_header";
 import { toast } from "react-toastify";
 
 const ProductCreate = () => {
+  let defualtImage =
+    "https://www.rallis.com/Upload/Images/thumbnail/Product-inside.png";
   const [productName, setProductName] = useState("");
   const [productImage, setProducImage] = useState("");
   const [productPrice, setProductPrice] = useState("");
@@ -18,7 +20,7 @@ const ProductCreate = () => {
         {
           name: productName,
           price: productPrice,
-          imageUrl: productImage,
+          imageUrl: productImage || defualtImage,
           stock: productStock,
         },
         {

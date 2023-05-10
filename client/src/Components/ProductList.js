@@ -1,5 +1,3 @@
-/** @format */
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import QuantityButton from "./QuantityButton";
@@ -7,6 +5,7 @@ import ReviewsList from "./ReviewsList";
 
 const ProductList = () => {
   const [products, setProducts] = useState({});
+  let quantity = 1;
 
   const fetchProducts = async () => {
     try {
@@ -19,6 +18,7 @@ const ProductList = () => {
 
   const addToCart = (item) => {
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || {};
+    item["quantity"] = quantity;
     cartItems[item.productId] = item;
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   };
@@ -28,7 +28,6 @@ const ProductList = () => {
   }, []);
 
   const renderedProducts = Object.values(products).map((product) => {
-    let quantity = 1;
     return (
       <div
         className="container card justify-content-center align-items-center"
@@ -49,7 +48,6 @@ const ProductList = () => {
           <h6>Seller : {product.sellerName}</h6>
           <h6> Product Reviews</h6>
           <ReviewsList reviews={product.reviews} />
-          {/* <ReviewCreate productId={product.productId} /> */}
           {product.stock > 0 ? (
             <>
               <QuantityButton
@@ -67,7 +65,14 @@ const ProductList = () => {
                 Add To Cart
               </button>
             </>
-          ) : null}
+          ) : (
+            <button
+              className="btn btn-danger"
+              style={{ alignSelf: "flex-end" }}
+            >
+              Out of Stock
+            </button>
+          )}
         </div>
       </div>
     );
