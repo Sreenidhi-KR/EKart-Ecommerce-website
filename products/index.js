@@ -1,3 +1,5 @@
+/** @format */
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const { randomBytes } = require("crypto");
@@ -38,12 +40,26 @@ app.post("/product/create", authenticateToken, async (req, res) => {
       stock,
     },
   });
+  console.log("\n PRODUCT CREATED :", products[productId]);
   res.status(201).send(products[productId]);
 });
 
 app.post("/events", (req, res) => {
-  //console.log("Received Event", req.body.type);
+  console.log("Received Event", req.body.type);
+  const { data, type } = req.body;
+  if (type === "OrderCreated") {
+    const orderedProducts = data.products;
+    for (let orderedProduct of orderedProducts) {
+      products[orderedProduct.productId].stock =
+        Number(products[orderedProduct.productId].stock) -
+        Number(orderedProduct.quantity);
+    }
+  }
   res.send({});
+});
+
+app.get("/", (req, res) => {
+  res.send({ products });
 });
 
 function authenticateToken(req, res, next) {
@@ -66,5 +82,5 @@ function authenticateToken(req, res, next) {
 }
 
 app.listen(4000, () => {
-  console.log("Products Listening on 4000");
+  console.log("Products Listening on - 4000");
 });

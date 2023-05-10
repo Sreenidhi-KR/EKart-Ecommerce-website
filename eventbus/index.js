@@ -1,3 +1,5 @@
+/** @format */
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const axios = require("axios");
@@ -28,10 +30,10 @@ app.post("/events", (req, res) => {
     console.log("moderation");
     console.log(err.message);
   });
-  // axios.post("http://orders-srv:4004/events", event).catch((err) => {
-  //   console.log("orders");
-  //   console.log(err.message);
-  // });
+  axios.post("http://orders-srv:4004/events", event).catch((err) => {
+    console.log("orders");
+    console.log(err.message);
+  });
   res.send({ status: "OK" });
 });
 
