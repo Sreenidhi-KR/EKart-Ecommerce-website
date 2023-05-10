@@ -52,6 +52,11 @@ const handleEvent = (type, data) => {
         Number(orderedProduct.quantity);
     }
   }
+
+  if (type === "StockUpdated") {
+    const { new_stock, productId } = data;
+    products[productId].stock = new_stock;
+  }
 };
 
 app.get("/products", (req, res) => {

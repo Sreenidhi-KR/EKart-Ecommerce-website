@@ -48,6 +48,7 @@ app.post("/product/create", authenticateToken, async (req, res) => {
 app.post("/events", (req, res) => {
   console.log("Received Event", req.body.type);
   const { data, type } = req.body;
+
   if (type === "OrderCreated") {
     const orderedProducts = data.products;
     for (let orderedProduct of orderedProducts) {
@@ -55,6 +56,11 @@ app.post("/events", (req, res) => {
         Number(products[orderedProduct.productId].stock) -
         Number(orderedProduct.quantity);
     }
+  }
+
+  if (type === "StockUpdated") {
+    const { new_stock, productId } = data;
+    products[productId].stock = new_stock;
   }
   res.send({});
 });

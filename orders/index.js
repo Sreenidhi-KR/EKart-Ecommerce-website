@@ -159,6 +159,27 @@ app.get("/orders", authenticateToken, (req, res) => {
   res.send(ordersList[req.user.userName]);
 });
 
+app.post("/updateStock", async (req, res) => {
+  const { productId, new_stock } = req.body;
+  productsInventory[productId].stock = new_stock;
+  console.log("\n\t Updated Stock", productsInventory[productId]);
+
+  //Broadcast the StockUpdated to PRODUCTS and QUERY services
+  try {
+    await axios.post("http://eventbus-srv:4005/events", {
+      type: "StockUpdated",
+      data: {
+        productId,
+        new_stock,
+      },
+    });
+  } catch (err) {
+    console.log("\n ERROR : Couldnot Broadcase StockUpdated ".err);
+  }
+
+  res.status(201).send(productsInventory[productId]);
+});
+
 app.post("/events", (req, res) => {
   const { type, data } = req.body;
 
