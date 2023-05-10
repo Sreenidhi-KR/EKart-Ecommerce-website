@@ -19,16 +19,22 @@ const OrderList = () => {
 
   const renderedOrders = Object.values(orders).map((order) => (
     <div>
-      <div className="">
+      <div>
         <div style={{ marginLeft: 20, marginTop: 5 }}>
           <h6> Order Id : {order.order_id}</h6>
           <h6> Order Total : ₹ {order.total}</h6>
+          <h6> Order Status : {order.status}</h6>
         </div>
         <div className="d-flex flex-row flex-wrap justify-content-start ">
           {order.products.map((product) => (
             <div
               className="m-2 card justify-content-around align-items-around"
-              style={{ width: "31%", height: "40%" }}
+              style={{
+                width: "31%",
+                height: "40%",
+                backgroundColor:
+                  order.status === "Accepted" ? "white" : "#d9d9d9",
+              }}
               key={product.productId}
             >
               <div className="card-body">
@@ -44,7 +50,9 @@ const OrderList = () => {
                     <h3>{product.name}</h3>
                     <h6>Price : ₹ {product.price}</h6>
                     <h6>Quantity : {product.quantity} Units</h6>
-                    <ReviewCreate productId={product.productId} />
+                    {order.status === "Accepted" ? (
+                      <ReviewCreate productId={product.productId} />
+                    ) : null}
                   </div>
                 </div>
               </div>

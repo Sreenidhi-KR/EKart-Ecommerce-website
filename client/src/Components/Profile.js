@@ -52,6 +52,8 @@ const Profile = () => {
           style={{
             width: "15%",
             height: "20%",
+            paddingLeft: 60,
+
             justifyContent: "center",
             alignContent: "center",
             alignItems: "center",

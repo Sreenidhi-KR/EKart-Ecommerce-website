@@ -14,7 +14,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-const products = {};
+let products = {};
 
 app.post("/product/create", authenticateToken, async (req, res) => {
   const productId = randomBytes(4).toString("hex");
@@ -44,16 +44,53 @@ app.post("/product/create", authenticateToken, async (req, res) => {
   res.status(201).send(products[productId]);
 });
 
-app.post("/events", (req, res) => {
+app.post("/events", async (req, res) => {
   console.log("Received Event", req.body.type);
   const { data, type } = req.body;
 
   if (type === "OrderCreated") {
+    const products_copy = structuredClone(products);
+    let flag = true;
     const orderedProducts = data.products;
     for (let orderedProduct of orderedProducts) {
-      products[orderedProduct.productId].stock =
-        Number(products[orderedProduct.productId].stock) -
-        Number(orderedProduct.quantity);
+      if (
+        Number(products[orderedProduct.productId].stock) >=
+        Number(orderedProduct.quantity)
+      ) {
+        products[orderedProduct.productId].stock -= Number(
+          orderedProduct.quantity
+        );
+      } else {
+        console.log("out of stock", orderedProduct);
+        flag = false;
+        //Need to reset stock to values before this transaction started
+        products = structuredClone(products_copy);
+        break;
+      }
+    }
+    try {
+      if (flag) {
+        console.log("Order Accepted");
+        await axios.post("http://eventbus-srv:4005/events", {
+          type: "OrderAccepted",
+          data: {
+            order_id: data.order_id,
+            userName: data.userName,
+            products: data.products,
+          },
+        });
+      } else {
+        console.log("Order Rejected");
+        await axios.post("http://eventbus-srv:4005/events", {
+          type: "OrderRejected",
+          data: {
+            order_id: data.order_id,
+            userName: data.userName,
+          },
+        });
+      }
+    } catch (err) {
+      console.log(err);
     }
   }
 

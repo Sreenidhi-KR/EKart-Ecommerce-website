@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import QuantityButton from "./QuantityButton";
 import ReviewsList from "./ReviewsList";
 
 const ProductList = () => {
   const [products, setProducts] = useState({});
-  let quantity = 1;
 
   const fetchProducts = async () => {
     try {
@@ -18,7 +16,7 @@ const ProductList = () => {
 
   const addToCart = (item) => {
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || {};
-    item["quantity"] = quantity;
+    item["quantity"] = 1;
     cartItems[item.productId] = item;
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   };
@@ -50,14 +48,7 @@ const ProductList = () => {
           <ReviewsList reviews={product.reviews} />
           {product.stock > 0 ? (
             <>
-              <QuantityButton
-                maxStock={product.stock}
-                updateStock={(currentStock) => {
-                  quantity = currentStock;
-                }}
-              />
               <button
-                //*******************Need to Add Quantity to Cart
                 onClick={() => addToCart(product)}
                 className="btn btn-primary"
                 style={{ alignSelf: "flex-end" }}

@@ -44,7 +44,7 @@ const handleEvent = (type, data) => {
     review.content = content;
   }
 
-  if (type === "OrderCreated") {
+  if (type === "OrderAccepted") {
     const orderedProducts = data.products;
     for (let orderedProduct of orderedProducts) {
       products[orderedProduct.productId].stock =

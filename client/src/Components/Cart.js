@@ -26,6 +26,7 @@ const Cart = () => {
         "http://ekart.com/orders/create",
         {
           products: result,
+          total,
         },
         {
           headers: await getHeaders(),
