@@ -44,7 +44,7 @@ const handleEvent = (type, data) => {
     review.content = content;
   }
 
-  if (type === "OrderCreated") {
+  if (type === "OrderAccepted") {
     const orderedProducts = data.products;
     for (let orderedProduct of orderedProducts) {
       products[orderedProduct.productId].stock =
@@ -53,9 +53,14 @@ const handleEvent = (type, data) => {
     }
   }
 
-  if (type === "StockUpdated") {
-    const { new_stock, productId } = data;
-    products[productId].stock = new_stock;
+  if (type === "ProductUpdated") {
+    const { sellerName, productId, name, price, imageUrl, stock } = data;
+    const product = products[productId];
+    product.sellerName = sellerName || product.sellerName;
+    product.name = name || product.name;
+    product.price = price || product.price;
+    product.imageUrl = imageUrl || product.imageUrl;
+    product.stock = stock || product.stock;
   }
 };
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Utils/auth_context";
 
 export const Login = () => {
@@ -7,10 +7,9 @@ export const Login = () => {
   const [register, setRegister] = useState(false);
   const [isSeller, setIsSeller] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
   const auth = useAuth();
 
-  const redirectPath = location.state?.path || "/";
+  let redirectPath = "/";
   const [password, setPassword] = useState("");
 
   const handleLogin = async (event) => {
@@ -21,7 +20,10 @@ export const Login = () => {
       password,
     };
 
-    await auth.login(credentials);
+    const userInfo = await auth.login(credentials);
+    if (userInfo?.isSeller) {
+      redirectPath = "/seller-home";
+    }
 
     navigate(redirectPath, { replace: true });
   };
