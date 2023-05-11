@@ -91,7 +91,7 @@ const handleEvent = async (type, data) => {
         return product.save();
       })
       .then((updatedProduct) => {
-        console.log("Review added to product:", updatedProduct);
+        console.log("Review added to product:");
       })
       .catch((error) => {
         console.error("Error adding review:", error);
@@ -118,8 +118,8 @@ const handleEvent = async (type, data) => {
           if (!product) {
             throw new Error("Product not found");
           }
-          console.log("OUrrrrrrrrrrr PRODUCT:", product);
-          console.log("OUrrrrrrrrrrr PRODUCT REVIEW:", product.reviews);
+          // console.log("OUrrrrrrrrrrr PRODUCT:", product);
+          // console.log("OUrrrrrrrrrrr PRODUCT REVIEW:", product.reviews);
 
           // Find the index of the review within the reviews array based on its unique identifier
           const reviewIndex = product.reviews.findIndex(
@@ -138,7 +138,7 @@ const handleEvent = async (type, data) => {
           return product.save();
         })
         .then((updatedProduct) => {
-          console.log("Review updated:", updatedProduct);
+          console.log("Review updated:");
         })
         .catch((error) => {
           console.error("Error updating review:", error);
