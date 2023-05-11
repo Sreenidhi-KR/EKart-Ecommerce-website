@@ -1,3 +1,5 @@
+/** @format */
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -106,7 +108,7 @@ function generateRefreshToken(user) {
 }
 
 function generateAccessToken(user) {
-  return jwt.sign(user, ACCESS_TOKEN_SECRET, { expiresIn: "25s" });
+  return jwt.sign(user, ACCESS_TOKEN_SECRET, { expiresIn: "1225s" });
 }
 
 // ---------------------------Another server

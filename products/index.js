@@ -83,9 +83,12 @@ app.post("/product/create", authenticateToken, async (req, res) => {
   res.status(201).send(products[productId]);
 });
 
+// app.post("/product/update", async (req, res) => {
+//   console.log("LOG: in PRODUCT UPDATE");
+//   const sellerName = "Mr.Bean";
 app.post("/product/update", authenticateToken, async (req, res) => {
-  const { name, price, stock, imageUrl, productId } = req.body;
   const sellerName = req.user.userName;
+  const { name, price, stock, imageUrl, productId } = req.body;
 
   products[productId] = {
     productId,
@@ -96,7 +99,27 @@ app.post("/product/update", authenticateToken, async (req, res) => {
     stock,
   };
 
-  await axios.post("http://eventbus-srv:4005/events", async {
+  PRODUCTS.findOneAndUpdate(
+    { productId: productId }, // Filter to find the product by its ID
+    {
+      $set: {
+        sellerName: sellerName,
+        name: name,
+        price: price,
+        imageUrl: imageUrl,
+        stock: stock,
+      },
+    },
+    { new: true }
+  )
+    .then((updatedProduct) => {
+      console.log("Product updated successfully:", updatedProduct);
+    })
+    .catch((error) => {
+      console.error("Error updating product:", error);
+    });
+
+  await axios.post("http://eventbus-srv:4005/events", {
     type: "ProductUpdated",
     data: {
       sellerName,
@@ -110,48 +133,75 @@ app.post("/product/update", authenticateToken, async (req, res) => {
   res.status(201).send(products[productId]);
 });
 
+//***********TODO : Handle synch for OrderCreated to Update the stock ->
+// Revert to previous state if mismatch (Handling pending)
 app.post("/events", async (req, res) => {
   console.log("Received Event", req.body.type);
   const { data, type } = req.body;
-  // products = await PRODUCTS.find({});
+  products = await PRODUCTS.find({});
 
   if (type === "OrderCreated") {
-    const products_copy = structuredClone(products);
+    //const products_copy = structuredClone(products);
     let flag = true;
     const orderedProducts = data.products;
     console.log("ORDEREDPRODS", orderedProducts);
     console.log("PRODUCTSS", products);
 
     for (let orderedProduct of orderedProducts) {
-      console.log(
-        "------------OUR PROD : ",
-        products.filter(
-          (prod) => prod.productId === orderedProduct.productId
-        )[0].stock
-      );
-      const new_stock =
-        Number(
-          products.filter(
-            (prod) => prod.productId === orderedProduct.productId
-          )[0].stock
-        ) - Number(orderedProduct.quantity);
-
-      console.log(" NEW STOCK ", new_stock);
-      products.filter(
+      const product = products.filter(
         (prod) => prod.productId === orderedProduct.productId
-      )[0].stock = new_stock;
+      )[0]; //Getting the respective product
 
-      PRODUCTS.findOneAndUpdate(
-        { productId: orderedProduct.productId }, // Filter to find the product by its ID
-        { $set: { stock: new_stock } }, // Update the stock field with the new value
-        { new: true }
-      )
-        .then((updatedProduct) => {
-          console.log("Product updated successfully:");
-        })
-        .catch((error) => {
-          console.error("Error updating product:", error);
+      const updated_stock =
+        Number(product.stock) - Number(orderedProduct.quantity);
+
+      if (updated_stock >= 0) {
+        //Update Locally
+        console.log(" Updated STOCK ", updated_stock);
+        product.stock = updated_stock;
+
+        //Update in Backend
+        PRODUCTS.findOneAndUpdate(
+          { productId: orderedProduct.productId }, // Filter to find the product by its ID
+          { $set: { stock: updated_stock } }, // Update the stock field with the new value
+          { new: true }
+        )
+          .then((updatedProduct) => {
+            console.log("Product updated successfully:");
+          })
+          .catch((error) => {
+            console.error("Error updating product:", error);
+          });
+      } else {
+        flag = false;
+        break;
+      }
+    }
+
+    //Broadcase result to ORDERS and QUERY service
+    try {
+      if (flag) {
+        console.log("Order Accepted");
+        await axios.post("http://eventbus-srv:4005/events", {
+          type: "OrderAccepted",
+          data: {
+            order_id: data.order_id,
+            userName: data.userName,
+            products: data.products,
+          },
         });
+      } else {
+        console.log("Order Rejected");
+        await axios.post("http://eventbus-srv:4005/events", {
+          type: "OrderRejected",
+          data: {
+            order_id: data.order_id,
+            userName: data.userName,
+          },
+        });
+      }
+    } catch (err) {
+      console.log(err.message);
     }
   }
 
@@ -170,16 +220,35 @@ app.get("/product/seller", authenticateToken, (req, res) => {
   res.send({ ...filteredProducts });
 });
 
+////For Dubugging without Authentication
+// app.get("/product/seller", async (req, res) => {
+//   const products = await PRODUCTS.find({});
+//   const filteredProducts = {};
+
+//   Object.keys(products)
+//     .filter((key) => products[key].sellerName === req.body.sellerName)
+//     .forEach((key) => {
+//       filteredProducts[key] = products[key];
+//     });
+
+//   res.send({ ...filteredProducts });
+// });
+
 app.get("/", (req, res) => {
   res.send({ products });
+});
+
+//Get all products in PRODUCTS collection
 app.get("/proddb", async (req, res) => {
   const pro = await PRODUCTS.find({});
 
   res.send({ all_products: pro });
 });
-app.get("/prodlocal", async (req, res) => {
-  res.send({ all_products: products });
-});
+
+// //Get data of local product (J)
+// app.get("/prodlocal", async (req, res) => {
+//   res.send({ all_products: products });
+// });
 function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
