@@ -83,9 +83,11 @@ app.post("/product/create", authenticateToken, async (req, res) => {
   res.status(201).send(products[productId]);
 });
 
+////For Debugging without Authentication
 // app.post("/product/update", async (req, res) => {
 //   console.log("LOG: in PRODUCT UPDATE");
 //   const sellerName = "Mr.Bean";
+
 app.post("/product/update", authenticateToken, async (req, res) => {
   const sellerName = req.user.userName;
   const { name, price, stock, imageUrl, productId } = req.body;
@@ -113,10 +115,10 @@ app.post("/product/update", authenticateToken, async (req, res) => {
     { new: true }
   )
     .then((updatedProduct) => {
-      console.log("Product updated successfully:", updatedProduct);
+      console.log("Product updated in PRODUCTS successfully:", updatedProduct);
     })
     .catch((error) => {
-      console.error("Error updating product:", error);
+      console.error("Error updating product in  PRODUCTS:", error);
     });
 
   await axios.post("http://eventbus-srv:4005/events", {
