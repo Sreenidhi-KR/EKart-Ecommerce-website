@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useAuth } from "../Utils/auth_context";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import getHeaders from "../Utils/jwt_header";
 import { toast } from "react-toastify";
@@ -28,7 +27,7 @@ const SellerHome = () => {
 
   const updateProduct = async (product) => {
     try {
-      const res = await axios.post(
+      await axios.post(
         "http://ekart.com/product/update",
         {
           productId: product.productId,
@@ -160,7 +159,6 @@ const SellerHome = () => {
     console.log("fetching");
     fetchProducts();
   }, []);
-  const auth = useAuth();
 
   return (
     <div>

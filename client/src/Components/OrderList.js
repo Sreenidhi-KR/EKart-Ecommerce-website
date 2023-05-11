@@ -11,17 +11,18 @@ const OrderList = () => {
       const res = await axios.get(`http://ekart.com/orders`, {
         headers: await getHeaders(),
       });
-      setOrders(res.data);
+      console.log(res.data.orders);
+      setOrders(res.data.orders);
     } catch (err) {
       console.log(err);
     }
   };
 
   const renderedOrders = Object.values(orders).map((order) => (
-    <div key={order.order_id}>
+    <div key={order.orderId}>
       <div>
         <div style={{ marginLeft: 20, marginTop: 5 }}>
-          <h6> Order Id : {order.order_id}</h6>
+          <h6> Order Id : {order.orderId}</h6>
           <h6> Order Total : ₹ {order.total}</h6>
           <h6> Order Status : {order.status}</h6>
         </div>
@@ -35,7 +36,7 @@ const OrderList = () => {
                 backgroundColor:
                   order.status === "Accepted" ? "white" : "#d9d9d9",
               }}
-              key={product.productId + order.order_id}
+              key={product.productId + order.orderId}
             >
               <div className="card-body">
                 <div className="d-flex flex-row justify-content-around">
