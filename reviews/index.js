@@ -14,31 +14,28 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(async () => {
-    console.log("Connected TO REVIEWS Mongooo");
-  })
   .catch((e) => {
-    console.log("Failed to connect to MONGOO", e.message);
+    console.log("Failed to connect to MONGOO : REVIEWS", e.message);
   });
 
 app.use(bodyParser.json());
 app.use(cors());
 
-const reviewsByProductId = {};
-
 app.post("/product/:id/reviews", async (req, res) => {
   const reviewId = randomBytes(4).toString("hex");
   const { content } = req.body;
-
-  const reviews = reviewsByProductId[req.params.id] || [];
-
-  reviews.push({ reviewId, content, status: "pending" });
-
-  reviewsByProductId[req.params.id] = reviews;
-
   const review = { reviewId, content, status: "pending" };
+  const productId = req.params.id;
 
-  await addReview(req.params.id, review);
+  try {
+    await REVIEWSBYPROD.findOneAndUpdate(
+      { productId },
+      { $setOnInsert: { productId }, $addToSet: { reviews: review } },
+      { upsert: true, new: true }
+    );
+  } catch (error) {
+    console.error("Error adding review:", error);
+  }
 
   await axios.post("http://eventbus-srv:4005/events", {
     type: "ReviewCreated",
@@ -50,7 +47,7 @@ app.post("/product/:id/reviews", async (req, res) => {
     },
   });
 
-  res.status(201).send(reviews);
+  res.status(201).send({});
 });
 
 app.post("/events", async (req, res) => {
@@ -59,14 +56,7 @@ app.post("/events", async (req, res) => {
   if (type === "ReviewModerated") {
     console.log("Event Received:", req.body.type);
     const { productId, reviewId, status, content } = data;
-    const reviews = reviewsByProductId[productId];
-
-    const review = reviews.find((review) => {
-      return review.reviewId === reviewId;
-    });
-
     await editReviewContent(productId, reviewId, content, status);
-    review.status = status;
     await axios.post("http://eventbus-srv:4005/events", {
       type: "ReviewUpdated",
       data: {
@@ -81,20 +71,6 @@ app.post("/events", async (req, res) => {
   res.send({});
 });
 
-async function addReview(productId, review) {
-  try {
-    const existingProduct = await REVIEWSBYPROD.findOneAndUpdate(
-      { productId },
-      { $setOnInsert: { productId }, $addToSet: { reviews: review } },
-      { upsert: true, new: true }
-    );
-
-    console.log("Review added to product:", existingProduct);
-  } catch (error) {
-    console.error("Error adding review:", error);
-  }
-}
-
 async function editReviewContent(productId, reviewId, newContent, newStatus) {
   try {
     const updatedProduct = await REVIEWSBYPROD.findOneAndUpdate(
@@ -107,7 +83,6 @@ async function editReviewContent(productId, reviewId, newContent, newStatus) {
       },
       { new: true }
     );
-
     if (!updatedProduct) {
       console.log(
         `Product with productId ${productId} or review with reviewId ${reviewId} not found.`

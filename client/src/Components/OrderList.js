@@ -4,16 +4,16 @@ import axios from "axios";
 import getHeaders from "../Utils/jwt_header";
 
 const OrderList = () => {
-  const [orders, setOrders] = useState({});
+  const [orders, setOrders] = useState([]);
 
   const fetchOrders = async () => {
     try {
       const res = await axios.get(`http://ekart.com/orders`, {
         headers: await getHeaders(),
       });
-      console.log(res.data?.orders);
-      if (res.data?.orders) {
-        setOrders(res.data?.orders);
+      console.table(res.data.ordersList[0]?.orders);
+      if (res.data?.ordersList[0]?.orders) {
+        setOrders(res.data?.ordersList[0]?.orders);
       }
     } catch (err) {
       console.log(err);

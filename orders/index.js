@@ -21,15 +21,11 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(async () => {
-    console.log("Connected To Order Service MongoDB");
-  })
   .catch((e) => {
     console.log("Failed to connect to Order Service MongoDb", e.message);
   });
 
-app.post("/orders/create", authenticateToken, async (req, res) => {
-  /*
+/*
   {
     "total":"10000"
     "products":[
@@ -42,64 +38,52 @@ app.post("/orders/create", authenticateToken, async (req, res) => {
     ]
   }
   */
-  const { products, total } = req.body;
-
-  const userName = req.user.userName;
-
-  const order_id = randomBytes(4).toString("hex");
-
-  let order = {
-    order_id,
-    total,
-    status: "Pending",
-    products: [],
-  };
-
-  const orderProducts = [];
-  for (let product of products) orderProducts.push(product);
-  order.products = orderProducts;
-
-  await addOrderToUser(userName, order_id, order); // Add a new order for a new userId and orderId
-
+app.post("/orders/create", authenticateToken, async (req, res) => {
   try {
-    await axios.post("http://eventbus-srv:4005/events", {
-      type: "OrderCreated",
-      data: {
-        order_id,
-        userName,
-        products,
-      },
-    });
-  } catch (err) {
-    console.log(err);
-  }
-  res.status(201).send({});
-});
+    const { products, total } = req.body;
+    const userName = req.user.userName;
+    const orderId = randomBytes(4).toString("hex");
 
-async function addOrderToUser(userId, orderId, order) {
-  try {
-    const updatedUser = await ORDERS.findOneAndUpdate(
-      { userId },
+    let order = {
+      orderId,
+      total,
+      status: "Pending",
+      products: [],
+    };
+    const orderProducts = [];
+    for (let product of products) orderProducts.push(product);
+    order.products = orderProducts;
+
+    await ORDERS.findOneAndUpdate(
+      { userId: userName },
       { $push: { orders: { orderId, ...order } } },
       { new: true, upsert: true }
     );
 
-    console.log("Order added to user:", updatedUser);
-  } catch (error) {
-    console.error("Error adding order to user:", error);
+    await axios.post("http://eventbus-srv:4005/events", {
+      type: "OrderCreated",
+      data: {
+        order_id: orderId,
+        userName,
+        products,
+      },
+    });
+    res.status(201).send({});
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ errMsg: "Could not create Order" });
   }
-}
+});
 
 app.get("/orders", authenticateToken, async (req, res) => {
   try {
-    const ordersList = await ORDERS.find({});
-
-    const usersOrder = ordersList.find(
-      (orderlist) => orderlist.userId === req.user.userName
-    );
-    res.send(usersOrder);
+    const ordersList = await ORDERS.find({
+      userId: req.user.userName,
+    });
+    res.send({ ordersList });
   } catch (err) {
     console.log("ERROR : Getting Orders ", err.message);
+    res.status(500).send({ errMsg: "Could not fetch Order" });
   }
 });
 

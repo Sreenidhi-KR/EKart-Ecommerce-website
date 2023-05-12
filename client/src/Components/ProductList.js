@@ -48,9 +48,8 @@ const ProductList = () => {
             alt="product"
           />
           <h2 style={{ color: "white" }}>{product.name}</h2>
-          <p>
-            Seller : {product.sellerName} ({product.stock} Units)
-          </p>
+          <p className="mb-0 pb-0">Seller : {product.sellerName}</p>
+          <p className="mt-0 pt-0">{product.stock} Units Avaialable</p>
           <p>Product Reviews</p>
           <ReviewsList reviews={product.reviews} />
           {product.stock > 0 ? (

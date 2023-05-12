@@ -1,10 +1,7 @@
-/** @format */
-
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const axios = require("axios");
-
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
@@ -13,15 +10,11 @@ const PRODUCTS = require("./QueryProducts");
 
 let dbURL =
   "mongodb+srv://Simha:Simha@cluster0.w56omxb.mongodb.net/QueryProducts?retryWrites=true&w=majority";
-let products = {};
 
 mongoose
   .connect(dbURL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-  })
-  .then(async () => {
-    console.log("Connected To QUERY MongoDB");
   })
   .catch((e) => {
     console.log("Failed to connect to QUERY MONGODB", e.message);
@@ -59,7 +52,7 @@ const handleEvent = async (type, data) => {
     });
     try {
       await newProduct.save();
-      console.log("New product added:", savedProduct);
+
       return;
     } catch (error) {
       console.error("Error saving product:", error);
@@ -67,33 +60,30 @@ const handleEvent = async (type, data) => {
   }
 
   if (type === "ReviewCreated") {
-    const { reviewId, content, productId, status } = data;
-    PRODUCTS.findOne({ productId: productId })
-      .then((product) => {
-        if (!product) {
-          throw new Error("Product not found while adding Review");
-        }
-        const newReview = {
-          reviewId,
-          content,
-          status,
-        };
+    try {
+      const { reviewId, content, productId, status } = data;
+      const product = await PRODUCTS.findOne({ productId: productId });
+      if (!product) {
+        throw new Error("Product not found while adding Review");
+      }
+      const newReview = {
+        reviewId,
+        content,
+        status,
+      };
 
-        product.reviews.push(newReview);
-        return product.save();
-      })
-      .then((updatedProduct) => {
-        console.log("Review added to product:");
-      })
-      .catch((error) => {
-        console.error("Error adding review:", error);
-      });
+      product.reviews.push(newReview);
+      const updatedProduct = await product.save();
+      return updatedProduct;
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   if (type === "ReviewUpdated") {
     const { reviewId, content, productId, status } = data;
 
-    PRODUCTS.findOne({ productId: productId })
+    PRODUCTS.findOne({ productId })
       .then((product) => {
         if (!product) {
           throw new Error("Product not found");
@@ -118,29 +108,14 @@ const handleEvent = async (type, data) => {
   }
 
   if (type === "OrderAccepted") {
-    const products = await PRODUCTS.find({});
-    const orderedProducts = data.products;
-
-    for (let orderedProduct of orderedProducts) {
-      const product = products.find(
-        (prod) => prod.productId === orderedProduct.productId
-      );
-      const updated_stock =
-        Number(product.stock) - Number(orderedProduct.quantity);
-
-      product.stock = updated_stock;
-
+    for (let orderedProduct of data.products) {
       PRODUCTS.findOneAndUpdate(
-        { productId: orderedProduct.productId }, // Filter to find the product by its ID
-        { $set: { stock: updated_stock } }, // Update the stock field with the new value
+        { productId: orderedProduct.productId },
+        { $inc: { stock: -Number(orderedProduct.quantity) } },
         { new: true }
-      )
-        .then((updatedProduct) => {
-          console.log("Stock in QUERY updated successfully:");
-        })
-        .catch((error) => {
-          console.error("Error updating Stock in QUERY :", error);
-        });
+      ).catch((error) => {
+        console.error("Error updating Stock in QUERY :", error);
+      });
     }
   }
 
@@ -148,7 +123,7 @@ const handleEvent = async (type, data) => {
     const { sellerName, productId, name, price, imageUrl, stock } = data;
 
     PRODUCTS.findOneAndUpdate(
-      { productId: productId }, // Filter to find the product by its ID
+      { productId },
       {
         $set: {
           sellerName: sellerName,
@@ -159,13 +134,9 @@ const handleEvent = async (type, data) => {
         },
       },
       { new: true }
-    )
-      .then((updatedProduct) => {
-        console.log("Product in QUERY updated successfully:");
-      })
-      .catch((error) => {
-        console.log("Product in QUERY updated ERROR:");
-      });
+    ).catch((error) => {
+      console.log("Product in QUERY updated ERROR:");
+    });
   }
 };
 

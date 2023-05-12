@@ -26,38 +26,9 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(async () => {
-    console.log("\n\t Connected TO Mongooo");
-    console.log("++++++++++++++++++++++++++++++++++++++");
-  })
   .catch((e) => {
     console.log("Failed to connect to MONGOO", e.message);
   });
-/*
-{
-  userName : "abc",
-  password: "abc",
-  isSeller : false
-}
-*/
-
-const addNewUserToDB = (user) => {
-  const { userName, password, isSeller } = user;
-  const newUser = new USERS({
-    userName,
-    password,
-    isSeller,
-  });
-
-  newUser
-    .save()
-    .then((savedUser) => {
-      console.log("User saved:", savedUser);
-    })
-    .catch((error) => {
-      console.error("Error saving user:", error);
-    });
-};
 
 app.post("/auth/register", async (req, res) => {
   try {
@@ -65,20 +36,25 @@ app.post("/auth/register", async (req, res) => {
     if (userName == null || password == null || isSeller == null) {
       return res.status(400).send("Bad Request");
     }
-    const users = await USERS.find({});
-    const checkUser = users.find((user) => user.userName === userName);
+    const checkUser = await USERS.findOne({ userName });
+
     if (checkUser != undefined) {
       return res.status(400).send("User already exists");
     }
-    const salt = await bcrypt.genSalt();
-    const hashedPassword = await bcrypt.hash(password, salt);
-    const user = {
-      userName,
-      password: hashedPassword,
-      isSeller: isSeller,
-    };
 
-    addNewUserToDB(user);
+    try {
+      const salt = await bcrypt.genSalt();
+      const hashedPassword = await bcrypt.hash(password, salt);
+      const user = {
+        userName,
+        password: hashedPassword,
+        isSeller: isSeller,
+      };
+      const newUser = new USERS(user);
+      await newUser.save();
+    } catch (err) {
+      console.error("Error saving user:", error);
+    }
     res.status(201).send();
   } catch (err) {
     console.log(err);
@@ -105,7 +81,6 @@ app.post("/auth/login", async (req, res) => {
         }
 
         if (result) {
-          console.log("Login successful");
           const jwtUser = { userName };
           const accessToken = generateAccessToken(user);
           const refreshToken = generateRefreshToken(user);

@@ -64,7 +64,7 @@ const Cart = () => {
     return (
       <div
         className="myCard card justify-content-center align-items-around"
-        style={{ width: "47%", margin: "10px" }}
+        style={{ width: "48%", margin: "10px" }}
         key={product.productId}
       >
         <div className="card-body">
@@ -74,7 +74,7 @@ const Cart = () => {
                 product.imageUrl ||
                 "https://www.rallis.com/Upload/Images/thumbnail/Product-inside.png"
               }
-              width="40%"
+              width="50%"
               style={{ marginRight: "50px" }}
               alt="product"
             />

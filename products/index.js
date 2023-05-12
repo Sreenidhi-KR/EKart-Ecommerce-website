@@ -10,14 +10,12 @@ const jwt = require("jsonwebtoken");
 const PRODUCTS = require("./Product");
 const ACCESS_TOKEN_SECRET =
   "cfb62c7e5f017b1531ecf97e60c1e90b2927a5923a163a43e287e50ac21cab5192a03c6e1698bd7012153f985274cf8d6b9eb84b3efa10d895278b68442f89bf";
+let dbURL =
+  "mongodb+srv://Simha:Simha@cluster0.w56omxb.mongodb.net/Products?retryWrites=true&w=majority";
 
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
-
-let dbURL =
-  "mongodb+srv://Simha:Simha@cluster0.w56omxb.mongodb.net/Products?retryWrites=true&w=majority";
-let products = {};
 
 mongoose
   .connect(dbURL, {
@@ -69,7 +67,7 @@ app.post("/product/update", authenticateToken, async (req, res) => {
   const { name, price, stock, imageUrl, productId } = req.body;
 
   PRODUCTS.findOneAndUpdate(
-    { productId: productId },
+    { productId },
     {
       $set: {
         sellerName: sellerName,
@@ -82,7 +80,6 @@ app.post("/product/update", authenticateToken, async (req, res) => {
     { new: true }
   )
     .then(async (updatedProduct) => {
-      console.log("Product updated in PRODUCTS successfully:", updatedProduct);
       await axios.post("http://eventbus-srv:4005/events", {
         type: "ProductUpdated",
         data: {
@@ -102,9 +99,13 @@ app.post("/product/update", authenticateToken, async (req, res) => {
     });
 });
 
-//***********TODO : Handle synch for OrderCreated to Update the stock ->
-// Revert to previous state if mismatch (Handling pending)
+app.get("/product/seller", authenticateToken, async (req, res) => {
+  const filteredProducts = {};
+  const products = await PRODUCTS.find({ sellerName: req.user.userName });
+  res.send({ products });
+});
 
+//TODO
 app.post("/events", async (req, res) => {
   const { data, type } = req.body;
   if (type === "OrderCreated") {
@@ -172,18 +173,6 @@ app.post("/events", async (req, res) => {
   }
 
   res.send({});
-});
-
-app.get("/product/seller", authenticateToken, async (req, res) => {
-  const filteredProducts = {};
-  const products = await PRODUCTS.find({});
-  Object.keys(products)
-    .filter((key) => products[key].sellerName === req.user.userName)
-    .forEach((key) => {
-      filteredProducts[key] = products[key];
-    });
-
-  res.send({ ...filteredProducts });
 });
 
 function authenticateToken(req, res, next) {

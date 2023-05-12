@@ -19,7 +19,7 @@ const SellerHome = () => {
       const res = await axios.get(`http://ekart.com/product/seller`, {
         headers: await getHeaders(),
       });
-      setProducts(res.data);
+      setProducts(res.data.products);
     } catch (err) {
       console.log(err);
     }
