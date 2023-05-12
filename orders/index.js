@@ -244,8 +244,6 @@ app.post("/orders/create", authenticateToken, async (req, res) => {
 app.get("/orders", authenticateToken, async (req, res) => {
   try {
     ordersList = await ORDERS.find({});
-    console.log("PPPPPPPPPPPPPPP", ordersList);
-    console.log("PPPPPPPPPPPPPPP", req.user.userName);
 
     const usersOrder = ordersList.find(
       (orderlist) => orderlist.userId === req.user.userName
