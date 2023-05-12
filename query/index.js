@@ -214,8 +214,13 @@ const handleEvent = async (type, data) => {
 };
 
 app.get("/products", async (req, res) => {
-  products = await PRODUCTS.find({});
-  res.send(products);
+  try {
+    products = await PRODUCTS.find({});
+    res.send(products);
+  } catch (err) {
+    console.log("query Products ", err);
+    res.sendStatus(500);
+  }
 });
 
 app.post("/events", (req, res) => {

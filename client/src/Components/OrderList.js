@@ -11,8 +11,10 @@ const OrderList = () => {
       const res = await axios.get(`http://ekart.com/orders`, {
         headers: await getHeaders(),
       });
-      console.log(res.data.orders);
-      setOrders(res.data.orders);
+      console.log(res.data?.orders);
+      if (res.data?.orders) {
+        setOrders(res.data?.orders);
+      }
     } catch (err) {
       console.log(err);
     }

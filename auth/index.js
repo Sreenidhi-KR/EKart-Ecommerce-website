@@ -1,5 +1,3 @@
-/** @format */
-
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -22,6 +20,7 @@ const REFRESH_TOKEN_SECRET =
 let dbURL =
   "mongodb+srv://Simha:Simha@cluster0.w56omxb.mongodb.net/Authentication?retryWrites=true&w=majority";
 let users = [];
+let refreshTokens = [];
 
 mongoose
   .connect(dbURL, {
@@ -44,8 +43,6 @@ mongoose
   isSeller : false
 }
 */
-
-let refreshTokens = [];
 
 const addNewUserToDB = (user) => {
   const { userName, password, isSeller } = user;
@@ -96,7 +93,6 @@ app.post("/auth/register", async (req, res) => {
 app.post("/auth/login", async (req, res) => {
   const { userName, password } = req.body;
   users = await USERS.find({});
-  console.log("USERRRRRRRRRRRRRRRRS", users);
   if (userName == null || password == null) {
     return res.status(400).send("Bad Request");
   }
@@ -124,8 +120,6 @@ app.post("/auth/login", async (req, res) => {
   //   console.log(err.message);
   //   res.status(500).send();
   // }
-
-  const bcrypt = require("bcrypt");
 
   // Perform password comparison during login
   USERS.findOne({ userName })
@@ -192,44 +186,6 @@ function generateAccessToken(user) {
   return jwt.sign({ userName: user.userName }, ACCESS_TOKEN_SECRET, {
     expiresIn: "1225s",
   });
-}
-
-// ---------------------------Another server
-
-const posts = [
-  {
-    userName: "Test",
-    title: "Post 1",
-  },
-  {
-    userName: "Jim",
-    title: "Post 2",
-  },
-];
-
-app.get("/user/posts", authenticateToken, (req, res) => {
-  //authentication middle ware will set user based on jwt so no need to get user from request
-  //getting posts from jwt token user
-  res.json(posts.filter((post) => post.userName === req.user.userName));
-});
-
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-  if (token == null) return res.sendStatus(401);
-  try {
-    jwt.verify(token, ACCESS_TOKEN_SECRET, (err, user) => {
-      console.log(err);
-      if (err) {
-        return res.sendStatus(403);
-      }
-      //set user from jwt token
-      req.user = user;
-      next();
-    });
-  } catch (err) {
-    console.log(err);
-  }
 }
 
 app.listen(3001, () => {
