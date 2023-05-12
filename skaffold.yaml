@@ -24,6 +24,8 @@ build:
         manual:
           - src: "src/**/*.js"
             dest: .
+          - src: "src/**/*.css"
+            dest: .
     - image: sreenidhikr/spe-products
       context: products
       docker:

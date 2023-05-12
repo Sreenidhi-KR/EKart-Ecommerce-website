@@ -12,7 +12,6 @@ const Profile = () => {
       onClick={() => {
         dialog.current.showModal();
       }}
-      color="#0275d8"
       fill="currentColor"
       className="bi bi-person-circle"
       viewBox="0 0 16 16"

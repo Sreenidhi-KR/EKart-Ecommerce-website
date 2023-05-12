@@ -30,7 +30,7 @@ const ReviewCreate = ({ productId }) => {
             className="form-control"
           />
         </div>
-        <button className="btn btn-primary">Submit</button>
+        <button className="btn rounded-0 myBtn">Submit</button>
       </form>
     </div>
   );

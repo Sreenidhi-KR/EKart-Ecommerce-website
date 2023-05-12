@@ -52,12 +52,12 @@ const SellerHome = () => {
   const renderedProducts = Object.values(products).map((product) => {
     return (
       <div
-        className="card justify-content-center align-items-center"
+        className="myCard card justify-content-center align-items-center"
         style={{ width: "45%", margin: 20 }}
         key={product.productId}
       >
-        <div className="card-body">
-          <div className="d-flex flex-row justify-content-around">
+        <div className="card-body justify-content-start">
+          <div className="d-flex flex-row justify-content-around align-items-center">
             <img
               src={product.imageUrl}
               height="200vh"
@@ -117,7 +117,7 @@ const SellerHome = () => {
                 <div style={{ marginTop: 20 }}>
                   <button
                     style={{ marginRight: 20 }}
-                    className="btn btn-success"
+                    className="btn btn-success rounded-0"
                     onClick={() => {
                       updateProduct(product);
                     }}
@@ -125,7 +125,7 @@ const SellerHome = () => {
                     Submit
                   </button>
                   <button
-                    className="btn btn-danger"
+                    className="btn btn-danger rounded-0"
                     onClick={() => {
                       setEditKey(-1);
                     }}
@@ -136,7 +136,7 @@ const SellerHome = () => {
               ) : (
                 <button
                   style={{ marginTop: 20 }}
-                  className="btn btn-info"
+                  className="btn myBtn rounded-0"
                   onClick={() => {
                     setProducImage(product.imageUrl);
                     setProductName(product.name);

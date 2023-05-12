@@ -44,7 +44,6 @@ export const Login = () => {
     <div className="Auth-form-container">
       <form className="Auth-form">
         <div className="Auth-form-content">
-          {/* <h3>{register ? "Register" : "Log In"}</h3> */}
           <h2> Ekart</h2>
           <div className="form-group mt-3">
             <h6>Username</h6>
@@ -92,6 +91,7 @@ export const Login = () => {
               fontSize: "12px",
               textDecoration: "none",
               cursor: "pointer",
+              color: "grey",
             }}
             onClick={(e) => {
               e.preventDefault();
@@ -107,7 +107,7 @@ export const Login = () => {
             <div className="d-grid mt-5">
               <button
                 type="submit"
-                className="btn btn-primary"
+                className="btn btn-dark"
                 onClick={(e) => handleRegister(e)}
               >
                 Register
@@ -117,7 +117,7 @@ export const Login = () => {
             <div className="d-grid mt-5">
               <button
                 type="submit"
-                className="btn btn-primary"
+                className="btn btn-dark"
                 onClick={(e) => handleLogin(e)}
               >
                 Login

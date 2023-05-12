@@ -39,45 +39,57 @@ const ProductCreate = () => {
   };
 
   return (
-    <div className="container">
-      <form onSubmit={onSubmit}>
-        <div className="form-group">
-          <label>Name</label>
-          <input
-            value={productName}
-            onChange={(e) => setProductName(e.target.value)}
-            className="form-control"
-            inputMode="text"
-          />
-          <label>Image Link</label>
-          <input
-            value={productImage}
-            onChange={(e) => setProducImage(e.target.value)}
-            className="form-control"
-            inputMode="url"
-            type="url"
-          />
+    <div
+      style={{ color: "grey" }}
+      className="d-flex justify-content-center align-items-center mt-5"
+    >
+      <div
+        className="card p-5 "
+        style={{
+          width: "50%",
+          height: "70%",
+        }}
+      >
+        <form onSubmit={onSubmit}>
+          <div className="form-group">
+            <h3 className="mb-3">Add Lisiting</h3>
+            <label>Name</label>
+            <input
+              value={productName}
+              onChange={(e) => setProductName(e.target.value)}
+              className="form-control"
+              inputMode="text"
+            />
+            <label>Image Link</label>
+            <input
+              value={productImage}
+              onChange={(e) => setProducImage(e.target.value)}
+              className="form-control"
+              inputMode="url"
+              type="url"
+            />
 
-          <label>Price</label>
-          <input
-            value={productPrice}
-            onChange={(e) => setProductPrice(e.target.value)}
-            className="form-control"
-            inputMode="numeric"
-            type="number"
-          />
+            <label>Price</label>
+            <input
+              value={productPrice}
+              onChange={(e) => setProductPrice(e.target.value)}
+              className="form-control"
+              inputMode="numeric"
+              type="number"
+            />
 
-          <label>Stock</label>
-          <input
-            value={productStock}
-            onChange={(e) => setProductStock(e.target.value)}
-            className="form-control"
-            inputMode="numeric"
-            type="number"
-          />
-        </div>
-        <button className="btn btn-primary">Submit</button>
-      </form>
+            <label>Stock</label>
+            <input
+              value={productStock}
+              onChange={(e) => setProductStock(e.target.value)}
+              className="form-control"
+              inputMode="numeric"
+              type="number"
+            />
+          </div>
+          <button className="btn btn-dark">Submit</button>
+        </form>
+      </div>
     </div>
   );
 };

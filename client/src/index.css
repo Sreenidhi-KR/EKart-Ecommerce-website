@@ -1,16 +1,20 @@
 .primary-nav {
-  background-color: aliceblue;
   padding: 16px 32px;
+  color: #b6b6b6;
 }
 
 nav a {
   margin-right: 16px;
   text-decoration: none;
+  color: #b6b6b6;
+  font-size: 22px;
 }
 
 nav a.active {
   text-decoration: none;
   font-weight: 700;
+  color: #b6b6b6;
+  font-size: 22px;
 }
 
 .Auth-form-container {
@@ -23,14 +27,37 @@ nav a.active {
 
 .Auth-form {
   width: 420px;
-  box-shadow: rgb(0 0 0 / 16%) 1px 1px 10px;
+  box-shadow: rgb(0 0 0 / 16%) 1px 1px 30px;
   padding-top: 30px;
   padding-bottom: 80px;
   border-radius: 8px;
-  background-color: white;
+  background-color: whitesmoke;
+  border-radius: 2;
+  color: #181818;
+}
+
+.myBtn {
+  background-color: #89a5e3;
+}
+
+.myCard {
+  /* border-radius: 0;
+  
+  
+  background-color: transparent;
+  box-shadow: rgb(0 0 0 / 16%) 1px 1px 10px; */
+  background: #161616;
+  border-radius: 0;
+  border: 1px solid rgba(206, 206, 206, 0.25);
 }
 
 .Auth-form-content {
   padding-left: 12%;
   padding-right: 12%;
+}
+
+.myGradient {
+  border-radius: 0;
+  color: #b6b6b6;
+  background: #121212;
 }

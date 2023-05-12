@@ -63,20 +63,19 @@ const Cart = () => {
   const renderedProducts = Object.values(cartItems).map((product) => {
     return (
       <div
-        className="card justify-content-center align-items-center"
+        className="myCard card justify-content-center align-items-around"
         style={{ width: "47%", margin: "10px" }}
         key={product.productId}
       >
         <div className="card-body">
-          <div className="d-flex flex-row justify-content-between">
+          <div className="d-flex flex-row">
             <img
               src={
                 product.imageUrl ||
                 "https://www.rallis.com/Upload/Images/thumbnail/Product-inside.png"
               }
-              height="200vh"
-              width="200hw"
-              style={{ marginRight: "30px" }}
+              width="40%"
+              style={{ marginRight: "50px" }}
               alt="product"
             />
             <div className="d-flex flex-column justify-content-start align-items-start ">
@@ -93,7 +92,7 @@ const Cart = () => {
                 }}
               />
               <button
-                className="btn btn-danger"
+                className="btn rounded-0 btn-danger"
                 onClick={() => {
                   removeFromCart(product);
                 }}
@@ -117,7 +116,7 @@ const Cart = () => {
       <div className="col  ">
         <h4 className="m-3"> Cart Summary</h4>
         <h6 className="m-3"> Total Amount : ₹ {total}</h6>
-        <button className="btn btn-success ml-3" onClick={placeOrder}>
+        <button className="btn rounded-0 btn-success ml-3" onClick={placeOrder}>
           Place Order
         </button>
       </div>

@@ -30,11 +30,16 @@ const ProductList = () => {
   const renderedProducts = Object.values(products).map((product) => {
     return (
       <div
-        className="container card justify-content-center align-items-center"
-        style={{ width: "30%", height: "40%", margin: "20px" }}
+        className="myCard card d-flex align-items-center"
+        style={{
+          width: "23%",
+          height: "40%",
+          margin: "10px",
+          padding: 0,
+        }}
         key={product.productId}
       >
-        <div className="card-body">
+        <div className=" card-body">
           <img
             src={product.imageUrl}
             style={{ marginBottom: "50px" }}
@@ -42,25 +47,30 @@ const ProductList = () => {
             width="200hw"
             alt="product"
           />
-          <h3>{product.name}</h3>
-          <h6>Price : ₹ {product.price}</h6>
-          <h6>Stock : {product.stock} Units</h6>
-          <h6>Seller : {product.sellerName}</h6>
-          <h6> Product Reviews</h6>
+          <h2 style={{ color: "white" }}>{product.name}</h2>
+          <p>
+            Seller : {product.sellerName} ({product.stock} Units)
+          </p>
+          <p>Product Reviews</p>
           <ReviewsList reviews={product.reviews} />
           {product.stock > 0 ? (
-            <>
+            <div className="d-flex flex-row justify-content-start align-items-baseline">
+              <h5 style={{ color: "white", marginRight: 2, paddingTop: 5 }}>
+                ₹
+              </h5>
+              <h4 className="mr-5" style={{ color: "white" }}>
+                {product.price}
+              </h4>
               <button
                 onClick={() => addToCart(product)}
-                className="btn btn-primary"
-                style={{ alignSelf: "flex-end" }}
+                className="btn myBtn rounded-0"
               >
                 Add To Cart
               </button>
-            </>
+            </div>
           ) : (
             <button
-              className="btn btn-danger"
+              className="btn btn-danger rounded-0"
               style={{ alignSelf: "flex-end" }}
             >
               Out of Stock
