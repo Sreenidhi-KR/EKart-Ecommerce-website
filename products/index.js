@@ -24,12 +24,6 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(async () => {
-    console.log("\n\t Connected TO Mongooo");
-    products = await PRODUCTS.find({});
-    console.log(products);
-    console.log("=================================");
-  })
   .catch((e) => {
     console.log("Failed to connect to MONGOO", e.message);
   });
@@ -39,17 +33,6 @@ app.post("/product/create", authenticateToken, async (req, res) => {
   const { name, price, stock, imageUrl } = req.body;
   const sellerName = req.user.userName;
 
-  products[productId] = {
-    sellerName,
-    productId,
-    name,
-    price,
-    imageUrl,
-    stock,
-  };
-
-  //Add to MongoDB
-
   const newProduct = new PRODUCTS({
     sellerName,
     productId,
@@ -58,51 +41,35 @@ app.post("/product/create", authenticateToken, async (req, res) => {
     imageUrl,
     stock,
   });
-  // console.log("DB DATA : ", products);
+
   newProduct
     .save()
-    .then((savedProduct) => {
-      console.log("Product saved successfully:");
+    .then(async (savedProduct) => {
+      await axios.post("http://eventbus-srv:4005/events", {
+        type: "ProductCreated",
+        data: {
+          sellerName,
+          productId,
+          name,
+          price,
+          imageUrl,
+          stock,
+        },
+      });
+      res.status(201).send(savedProduct);
     })
     .catch((error) => {
-      console.error("\n\tERROR saving product in Mongi:", error);
+      console.error("ERROR saving product in MongoDB:", error);
+      res.sendStatus(500);
     });
-
-  //Broadcast so ORDERS and QUERY Service
-  await axios.post("http://eventbus-srv:4005/events", {
-    type: "ProductCreated",
-    data: {
-      sellerName,
-      productId,
-      name,
-      price,
-      imageUrl,
-      stock,
-    },
-  });
-  res.status(201).send(products[productId]);
 });
-
-////For Debugging without Authentication
-// app.post("/product/update", async (req, res) => {
-//   console.log("LOG: in PRODUCT UPDATE");
-//   const sellerName = "Mr.Bean";
 
 app.post("/product/update", authenticateToken, async (req, res) => {
   const sellerName = req.user.userName;
   const { name, price, stock, imageUrl, productId } = req.body;
 
-  products[productId] = {
-    productId,
-    sellerName,
-    name,
-    price,
-    imageUrl,
-    stock,
-  };
-
   PRODUCTS.findOneAndUpdate(
-    { productId: productId }, // Filter to find the product by its ID
+    { productId: productId },
     {
       $set: {
         sellerName: sellerName,
@@ -114,52 +81,49 @@ app.post("/product/update", authenticateToken, async (req, res) => {
     },
     { new: true }
   )
-    .then((updatedProduct) => {
+    .then(async (updatedProduct) => {
       console.log("Product updated in PRODUCTS successfully:", updatedProduct);
+      await axios.post("http://eventbus-srv:4005/events", {
+        type: "ProductUpdated",
+        data: {
+          sellerName,
+          productId,
+          name,
+          price,
+          imageUrl,
+          stock,
+        },
+      });
+      res.status(201).send(updatedProduct);
     })
     .catch((error) => {
-      console.error("Error updating product in  PRODUCTS:", error);
+      console.error("Error updating product in  MongoDB:", error);
+      res.sendStatus(500);
     });
-
-  await axios.post("http://eventbus-srv:4005/events", {
-    type: "ProductUpdated",
-    data: {
-      sellerName,
-      productId,
-      name,
-      price,
-      imageUrl,
-      stock,
-    },
-  });
-  res.status(201).send(products[productId]);
 });
 
 //***********TODO : Handle synch for OrderCreated to Update the stock ->
 // Revert to previous state if mismatch (Handling pending)
-app.post("/events", async (req, res) => {
-  console.log("Received Event", req.body.type);
-  const { data, type } = req.body;
-  products = await PRODUCTS.find({});
 
+app.post("/events", async (req, res) => {
+  const { data, type } = req.body;
   if (type === "OrderCreated") {
     //const products_copy = structuredClone(products);
+    console.log("Received Event", req.body.type);
+
+    const products = await PRODUCTS.find({});
     let flag = true;
     const orderedProducts = data.products;
-    console.log("ORDEREDPRODS", orderedProducts);
-    console.log("PRODUCTSS", products);
 
     for (let orderedProduct of orderedProducts) {
       const product = products.filter(
         (prod) => prod.productId === orderedProduct.productId
-      )[0]; //Getting the respective product
+      )[0];
 
       const updated_stock =
         Number(product.stock) - Number(orderedProduct.quantity);
 
       if (updated_stock >= 0) {
-        //Update Locally
-        console.log(" Updated STOCK ", updated_stock);
         product.stock = updated_stock;
 
         //Update in Backend
@@ -210,9 +174,9 @@ app.post("/events", async (req, res) => {
   res.send({});
 });
 
-app.get("/product/seller", authenticateToken, (req, res) => {
+app.get("/product/seller", authenticateToken, async (req, res) => {
   const filteredProducts = {};
-
+  const products = await PRODUCTS.find({});
   Object.keys(products)
     .filter((key) => products[key].sellerName === req.user.userName)
     .forEach((key) => {
@@ -222,35 +186,6 @@ app.get("/product/seller", authenticateToken, (req, res) => {
   res.send({ ...filteredProducts });
 });
 
-////For Dubugging without Authentication
-// app.get("/product/seller", async (req, res) => {
-//   const products = await PRODUCTS.find({});
-//   const filteredProducts = {};
-
-//   Object.keys(products)
-//     .filter((key) => products[key].sellerName === req.body.sellerName)
-//     .forEach((key) => {
-//       filteredProducts[key] = products[key];
-//     });
-
-//   res.send({ ...filteredProducts });
-// });
-
-app.get("/", (req, res) => {
-  res.send({ products });
-});
-
-//Get all products in PRODUCTS collection
-app.get("/proddb", async (req, res) => {
-  const pro = await PRODUCTS.find({});
-
-  res.send({ all_products: pro });
-});
-
-// //Get data of local product (J)
-// app.get("/prodlocal", async (req, res) => {
-//   res.send({ all_products: products });
-// });
 function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];

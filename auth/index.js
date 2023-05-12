@@ -19,7 +19,6 @@ const REFRESH_TOKEN_SECRET =
 
 let dbURL =
   "mongodb+srv://Simha:Simha@cluster0.w56omxb.mongodb.net/Authentication?retryWrites=true&w=majority";
-let users = [];
 let refreshTokens = [];
 
 mongoose
@@ -29,8 +28,6 @@ mongoose
   })
   .then(async () => {
     console.log("\n\t Connected TO Mongooo");
-    users = await USERS.find({});
-    console.log(users);
     console.log("++++++++++++++++++++++++++++++++++++++");
   })
   .catch((e) => {
@@ -52,7 +49,6 @@ const addNewUserToDB = (user) => {
     isSeller,
   });
 
-  // Save the user to the database
   newUser
     .save()
     .then((savedUser) => {
@@ -69,6 +65,7 @@ app.post("/auth/register", async (req, res) => {
     if (userName == null || password == null || isSeller == null) {
       return res.status(400).send("Bad Request");
     }
+    const users = await USERS.find({});
     const checkUser = users.find((user) => user.userName === userName);
     if (checkUser != undefined) {
       return res.status(400).send("User already exists");
@@ -82,7 +79,6 @@ app.post("/auth/register", async (req, res) => {
     };
 
     addNewUserToDB(user);
-    users.push(user);
     res.status(201).send();
   } catch (err) {
     console.log(err);
@@ -92,49 +88,20 @@ app.post("/auth/register", async (req, res) => {
 
 app.post("/auth/login", async (req, res) => {
   const { userName, password } = req.body;
-  users = await USERS.find({});
   if (userName == null || password == null) {
     return res.status(400).send("Bad Request");
   }
-  const user = users.find((user) => user.userName == userName);
-  if (user == null || user == undefined) {
-    return res.status(400).send("Can not find user");
-  }
-  // try {
-  //   console.log("PASSAEWORD TI COMPATEEEE L ", user.password);
-  //   if (await bcrypt.compare(password, user.password)) {
-  //     const jwtUser = { userName };
-  //     const accessToken = generateAccessToken(user);
-  //     const refreshToken = generateRefreshToken(user);
-  //     refreshTokens.push(refreshToken);
-  //     return res.status(201).send({
-  //       userName: user.userName,
-  //       isSeller: user.isSeller,
-  //       accessToken,
-  //       refreshToken,
-  //     });
-  //   } else {
-  //     return res.status(400).send("Wrong password");
-  //   }
-  // } catch (err) {
-  //   console.log(err.message);
-  //   res.status(500).send();
-  // }
 
-  // Perform password comparison during login
   USERS.findOne({ userName })
     .then((user) => {
       if (!user) {
-        // User not found
-        console.log("Invalid username or password");
-        return;
+        return res.status(400).send("Invalid User");
       }
 
-      // Compare the provided password with the hashed password stored in the database
       bcrypt.compare(password, user.password, (err, result) => {
         if (err) {
           console.error("Error comparing passwords:", err);
-          return;
+          return res.status(400).send("Invalid Password");
         }
 
         if (result) {
@@ -150,7 +117,7 @@ app.post("/auth/login", async (req, res) => {
             refreshToken,
           });
         } else {
-          console.log("Invalid username or password");
+          return res.status(400).send("Invalid Password");
         }
       });
     })

@@ -1,5 +1,3 @@
-/** @format */
-
 const express = require("express");
 const bodyParser = require("body-parser");
 const axios = require("axios");
@@ -22,7 +20,6 @@ app.post("/events", async (req, res) => {
 
   if (type === "ReviewCreated") {
     console.log(type);
-    //const status = data.content.includes("orange") ? "rejected" : "approved";
     const status = containsKeywords(data.content, keywords)
       ? "rejected"
       : "approved";
