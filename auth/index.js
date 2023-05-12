@@ -6,8 +6,10 @@ const cors = require("cors");
 const axios = require("axios");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
+const mongoose = require("mongoose");
 const app = express();
+const USERS = require("./Users");
+
 app.use(bodyParser.json());
 app.use(cors());
 
@@ -17,6 +19,24 @@ const ACCESS_TOKEN_SECRET =
 const REFRESH_TOKEN_SECRET =
   "2a2edf1b9edae5ef7c99656d615743eddd2d5e7d28b67ac1f762ce26ebd05f1fe66fc26f1af462e97dc063e98dad9b395949eea722530ea0c081b4d1c30dc572";
 
+let dbURL =
+  "mongodb+srv://Simha:Simha@cluster0.w56omxb.mongodb.net/Authentication?retryWrites=true&w=majority";
+let users = [];
+
+mongoose
+  .connect(dbURL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(async () => {
+    console.log("\n\t Connected TO Mongooo");
+    users = await USERS.find({});
+    console.log(users);
+    console.log("++++++++++++++++++++++++++++++++++++++");
+  })
+  .catch((e) => {
+    console.log("Failed to connect to MONGOO", e.message);
+  });
 /*
 {
   userName : "abc",
@@ -25,9 +45,26 @@ const REFRESH_TOKEN_SECRET =
 }
 */
 
-const users = [];
-
 let refreshTokens = [];
+
+const addNewUserToDB = (user) => {
+  const { userName, password, isSeller } = user;
+  const newUser = new USERS({
+    userName,
+    password,
+    isSeller,
+  });
+
+  // Save the user to the database
+  newUser
+    .save()
+    .then((savedUser) => {
+      console.log("User saved:", savedUser);
+    })
+    .catch((error) => {
+      console.error("Error saving user:", error);
+    });
+};
 
 app.post("/auth/register", async (req, res) => {
   try {
@@ -46,6 +83,8 @@ app.post("/auth/register", async (req, res) => {
       password: hashedPassword,
       isSeller: isSeller,
     };
+
+    addNewUserToDB(user);
     users.push(user);
     res.status(201).send();
   } catch (err) {
@@ -56,6 +95,8 @@ app.post("/auth/register", async (req, res) => {
 
 app.post("/auth/login", async (req, res) => {
   const { userName, password } = req.body;
+  users = await USERS.find({});
+  console.log("USERRRRRRRRRRRRRRRRS", users);
   if (userName == null || password == null) {
     return res.status(400).send("Bad Request");
   }
@@ -63,25 +104,65 @@ app.post("/auth/login", async (req, res) => {
   if (user == null || user == undefined) {
     return res.status(400).send("Can not find user");
   }
-  try {
-    if (await bcrypt.compare(password, user.password)) {
-      const jwtUser = { userName };
-      const accessToken = generateAccessToken(user);
-      const refreshToken = generateRefreshToken(user);
-      refreshTokens.push(refreshToken);
-      return res.status(201).send({
-        userName: user.userName,
-        isSeller: user.isSeller,
-        accessToken,
-        refreshToken,
+  // try {
+  //   console.log("PASSAEWORD TI COMPATEEEE L ", user.password);
+  //   if (await bcrypt.compare(password, user.password)) {
+  //     const jwtUser = { userName };
+  //     const accessToken = generateAccessToken(user);
+  //     const refreshToken = generateRefreshToken(user);
+  //     refreshTokens.push(refreshToken);
+  //     return res.status(201).send({
+  //       userName: user.userName,
+  //       isSeller: user.isSeller,
+  //       accessToken,
+  //       refreshToken,
+  //     });
+  //   } else {
+  //     return res.status(400).send("Wrong password");
+  //   }
+  // } catch (err) {
+  //   console.log(err.message);
+  //   res.status(500).send();
+  // }
+
+  const bcrypt = require("bcrypt");
+
+  // Perform password comparison during login
+  USERS.findOne({ userName })
+    .then((user) => {
+      if (!user) {
+        // User not found
+        console.log("Invalid username or password");
+        return;
+      }
+
+      // Compare the provided password with the hashed password stored in the database
+      bcrypt.compare(password, user.password, (err, result) => {
+        if (err) {
+          console.error("Error comparing passwords:", err);
+          return;
+        }
+
+        if (result) {
+          console.log("Login successful");
+          const jwtUser = { userName };
+          const accessToken = generateAccessToken(user);
+          const refreshToken = generateRefreshToken(user);
+          refreshTokens.push(refreshToken);
+          return res.status(201).send({
+            userName: user.userName,
+            isSeller: user.isSeller,
+            accessToken,
+            refreshToken,
+          });
+        } else {
+          console.log("Invalid username or password");
+        }
       });
-    } else {
-      return res.status(400).send("Wrong password");
-    }
-  } catch (err) {
-    console.log(err);
-    res.status(500).send();
-  }
+    })
+    .catch((error) => {
+      console.error("Error finding user:", error);
+    });
 });
 
 app.post("/auth/new-token", (req, res) => {
@@ -104,11 +185,13 @@ app.delete("/auth/logout", (req, res) => {
 });
 
 function generateRefreshToken(user) {
-  return jwt.sign(user, REFRESH_TOKEN_SECRET);
+  return jwt.sign({ userName: user.userName }, REFRESH_TOKEN_SECRET);
 }
 
 function generateAccessToken(user) {
-  return jwt.sign(user, ACCESS_TOKEN_SECRET, { expiresIn: "1225s" });
+  return jwt.sign({ userName: user.userName }, ACCESS_TOKEN_SECRET, {
+    expiresIn: "1225s",
+  });
 }
 
 // ---------------------------Another server
