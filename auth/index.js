@@ -53,7 +53,7 @@ app.post("/auth/register", async (req, res) => {
       const newUser = new USERS(user);
       await newUser.save();
     } catch (err) {
-      console.error("Error saving user:", error);
+      console.error("Error saving user:", err);
     }
     res.status(201).send();
   } catch (err) {

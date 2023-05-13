@@ -2,14 +2,18 @@ import React, { useEffect, useState } from "react";
 import ReviewCreate from "./ReviewCreate";
 import axios from "axios";
 import getHeaders from "../Utils/jwt_header";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../Utils/auth_context";
 
 const OrderList = () => {
+  const navigate = useNavigate();
+  const auth = useAuth();
   const [orders, setOrders] = useState([]);
 
   const fetchOrders = async () => {
     try {
       const res = await axios.get(`http://ekart.com/orders`, {
-        headers: await getHeaders(),
+        headers: await getHeaders(navigate, auth),
       });
       console.table(res.data.ordersList[0]?.orders);
       if (res.data?.ordersList[0]?.orders) {

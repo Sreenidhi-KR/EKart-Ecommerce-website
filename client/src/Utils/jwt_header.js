@@ -1,7 +1,7 @@
 import jwt_decode from "jwt-decode";
 import axios from "axios";
 
-const getHeaders = async () => {
+const getHeaders = async (navigate, auth) => {
   let token = JSON.parse(localStorage.getItem("user")).accessToken;
 
   if (token) {
@@ -22,6 +22,8 @@ const getHeaders = async () => {
         token = res.data.accessToken;
       } catch (err) {
         console.log("refresh token expired");
+        auth.logout();
+        navigate("/user-login");
       }
     }
   }

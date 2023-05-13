@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import getHeaders from "../Utils/jwt_header";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../Utils/auth_context";
 
 const SellerHome = () => {
   const [products, setProducts] = useState({});
@@ -10,6 +12,8 @@ const SellerHome = () => {
   const [productImage, setProducImage] = useState("");
   const [productPrice, setProductPrice] = useState("");
   const [productStock, setProductStock] = useState("");
+  const navigate = useNavigate();
+  const auth = useAuth();
 
   let defualtImage =
     "https://www.rallis.com/Upload/Images/thumbnail/Product-inside.png";
@@ -17,7 +21,7 @@ const SellerHome = () => {
   const fetchProducts = async () => {
     try {
       const res = await axios.get(`http://ekart.com/product/seller`, {
-        headers: await getHeaders(),
+        headers: await getHeaders(navigate, auth),
       });
       setProducts(res.data.products);
     } catch (err) {
@@ -38,7 +42,7 @@ const SellerHome = () => {
           stock: productStock,
         },
         {
-          headers: await getHeaders(),
+          headers: await getHeaders(navigate, auth),
         }
       );
       toast.success("Edited Sucessfully");

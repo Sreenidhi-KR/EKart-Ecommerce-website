@@ -2,8 +2,12 @@ import React, { useState } from "react";
 import axios from "axios";
 import getHeaders from "../Utils/jwt_header";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../Utils/auth_context";
 
 const ProductCreate = () => {
+  const navigate = useNavigate();
+  const auth = useAuth();
   let defualtImage =
     "https://www.rallis.com/Upload/Images/thumbnail/Product-inside.png";
   const [productName, setProductName] = useState("");
@@ -24,7 +28,7 @@ const ProductCreate = () => {
           stock: productStock,
         },
         {
-          headers: await getHeaders(),
+          headers: await getHeaders(navigate,auth),
         }
       );
       toast.success("Added Sucessfully");

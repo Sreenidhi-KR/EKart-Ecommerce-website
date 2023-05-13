@@ -3,8 +3,13 @@ import axios from "axios";
 import getHeaders from "../Utils/jwt_header";
 import { toast } from "react-toastify";
 import QuantityButton from "./QuantityButton";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../Utils/auth_context";
 
 const Cart = () => {
+  const navigate = useNavigate();
+  const auth = useAuth();
+
   const [cartItems, setCartItems] = useState(
     JSON.parse(localStorage.getItem("cartItems")) || {}
   );
@@ -29,7 +34,7 @@ const Cart = () => {
           total,
         },
         {
-          headers: await getHeaders(),
+          headers: await getHeaders(navigate, auth),
         }
       );
       toast.info("Order Created");
