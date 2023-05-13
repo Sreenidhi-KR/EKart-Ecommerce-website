@@ -41,7 +41,13 @@ export const Login = () => {
   };
 
   return (
-    <div className="Auth-form-container">
+    <div
+      style={{
+        background:
+          "linear-gradient(90deg, rgba(22,27,32,1) 0%, rgba(2,7,19,1) 100%)",
+      }}
+      className="Auth-form-container myGradient"
+    >
       <form className="Auth-form">
         <div className="Auth-form-content">
           <h2> Ekart</h2>

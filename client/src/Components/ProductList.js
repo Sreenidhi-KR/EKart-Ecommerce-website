@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ReviewsList from "./ReviewsList";
 import { toast } from "react-toastify";
+import ClipLoader from "react-spinners/ClipLoader";
 
 const ProductList = () => {
   const [products, setProducts] = useState({});
+  let [loading, setLoading] = useState(true);
 
   const fetchProducts = async () => {
     try {
@@ -12,6 +14,8 @@ const ProductList = () => {
       setProducts(res.data);
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -81,8 +85,22 @@ const ProductList = () => {
   });
 
   return (
-    <div className="d-flex flex-row flex-wrap justify-content-start">
-      {renderedProducts}
+    <div>
+      {loading ? (
+        <center>
+          <ClipLoader
+            loading={loading}
+            color="white"
+            size={50}
+            aria-label="Loading Spinner"
+            data-testid="loader"
+          />
+        </center>
+      ) : (
+        <div className="d-flex flex-row flex-wrap justify-content-start">
+          {renderedProducts}{" "}
+        </div>
+      )}
     </div>
   );
 };

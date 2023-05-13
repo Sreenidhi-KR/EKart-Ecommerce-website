@@ -4,11 +4,13 @@ import axios from "axios";
 import getHeaders from "../Utils/jwt_header";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Utils/auth_context";
+import ClipLoader from "react-spinners/ClipLoader";
 
 const OrderList = () => {
   const navigate = useNavigate();
   const auth = useAuth();
   const [orders, setOrders] = useState([]);
+  let [loading, setLoading] = useState(true);
 
   const fetchOrders = async () => {
     try {
@@ -21,6 +23,8 @@ const OrderList = () => {
       }
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -77,10 +81,24 @@ const OrderList = () => {
 
   return (
     <div className="d-flex flex-column flex-wrap justify-content-start">
-      {Object.keys(orders).length > 0 ? null : (
-        <center className="mt-5">No Orders</center>
+      {loading ? (
+        <center>
+          <ClipLoader
+            loading={loading}
+            color="white"
+            size={50}
+            aria-label="Loading Spinner"
+            data-testid="loader"
+          />
+        </center>
+      ) : (
+        <div>
+          {Object.keys(orders).length > 0 ? null : (
+            <center className="mt-5">No Orders</center>
+          )}
+          {renderedOrders}
+        </div>
       )}
-      {renderedOrders}
     </div>
   );
 };

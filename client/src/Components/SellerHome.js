@@ -4,6 +4,7 @@ import getHeaders from "../Utils/jwt_header";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Utils/auth_context";
+import ClipLoader from "react-spinners/ClipLoader";
 
 const SellerHome = () => {
   const [products, setProducts] = useState({});
@@ -14,23 +15,28 @@ const SellerHome = () => {
   const [productStock, setProductStock] = useState("");
   const navigate = useNavigate();
   const auth = useAuth();
+  let [loading, setLoading] = useState(true);
 
   let defualtImage =
     "https://www.rallis.com/Upload/Images/thumbnail/Product-inside.png";
 
   const fetchProducts = async () => {
     try {
+      setLoading(true);
       const res = await axios.get(`http://ekart.com/product/seller`, {
         headers: await getHeaders(navigate, auth),
       });
       setProducts(res.data.products);
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
 
   const updateProduct = async (product) => {
     try {
+      setLoading(true);
       await axios.post(
         "http://ekart.com/product/update",
         {
@@ -50,6 +56,8 @@ const SellerHome = () => {
       await fetchProducts();
     } catch (err) {
       toast.error("Error while Editing");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -166,7 +174,20 @@ const SellerHome = () => {
 
   return (
     <div>
-      {products?.length <= 0 ? <h6>No Listings</h6> : null}
+      {loading ? (
+        <center>
+          <ClipLoader
+            loading={loading}
+            color="white"
+            size={50}
+            aria-label="Loading Spinner"
+            data-testid="loader"
+          />
+        </center>
+      ) : products?.length <= 0 ? (
+        <center>No Listings</center>
+      ) : null}
+
       <div className="d-flex flex-row flex-wrap justify-content-start">
         {renderedProducts}
       </div>

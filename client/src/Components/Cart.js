@@ -5,10 +5,12 @@ import { toast } from "react-toastify";
 import QuantityButton from "./QuantityButton";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Utils/auth_context";
+import ClipLoader from "react-spinners/ClipLoader";
 
 const Cart = () => {
   const navigate = useNavigate();
   const auth = useAuth();
+  let [loading, setLoading] = useState(false);
 
   const [cartItems, setCartItems] = useState(
     JSON.parse(localStorage.getItem("cartItems")) || {}
@@ -27,6 +29,7 @@ const Cart = () => {
       })
     );
     try {
+      setLoading(true);
       await axios.post(
         "http://ekart.com/orders/create",
         {
@@ -41,6 +44,8 @@ const Cart = () => {
     } catch (err) {
       toast.error("Error while Ordering");
       console.log(err);
+    } finally {
+      setLoading(false);
     }
     setCartItems({});
     localStorage.removeItem("cartItems");
@@ -112,18 +117,34 @@ const Cart = () => {
   });
 
   return total > 0 ? (
-    <div className="row">
-      <div className="col-9">
-        <div className="d-flex flex-row flex-wrap justify-content-start">
-          {renderedProducts}
+    <div>
+      {loading ? (
+        <center>
+          <ClipLoader
+            loading={loading}
+            color="white"
+            size={50}
+            aria-label="Loading Spinner"
+            data-testid="loader"
+          />
+        </center>
+      ) : null}
+      <div className="row">
+        <div className="col-9">
+          <div className="d-flex flex-row flex-wrap justify-content-start">
+            {renderedProducts}
+          </div>
         </div>
-      </div>
-      <div className="col  ">
-        <h4 className="m-3"> Cart Summary</h4>
-        <h6 className="m-3"> Total Amount : ₹ {total}</h6>
-        <button className="btn rounded-0 btn-success ml-3" onClick={placeOrder}>
-          Place Order
-        </button>
+        <div className="col  ">
+          <h4 className="m-3"> Cart Summary</h4>
+          <h6 className="m-3"> Total Amount : ₹ {total}</h6>
+          <button
+            className="btn rounded-0 btn-success ml-3"
+            onClick={placeOrder}
+          >
+            Place Order
+          </button>
+        </div>
       </div>
     </div>
   ) : (
