@@ -1,101 +1,19 @@
 /** @format */
 
-const express = require("express");
-const bodyParser = require("body-parser");
-const { randomBytes } = require("crypto");
-const cors = require("cors");
+const app = require("./app");
 const axios = require("axios");
-const app = express();
-const mongoose = require("mongoose");
 
-const REVIEWSBYPROD = require("./Reviews");
-let dbURL = `mongodb+srv://Simha:Simha@cluster0.w56omxb.mongodb.net/Reviews?retryWrites=true&w=majority`;
-
-mongoose
-  .connect(dbURL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .catch((e) => {
-    console.log("Failed to connect to MONGOO : REVIEWS", e.message);
-  });
-
-app.use(bodyParser.json());
-app.use(cors());
-
-app.post("/product/:id/reviews", async (req, res) => {
-  const reviewId = randomBytes(4).toString("hex");
-  const { content } = req.body;
-  const review = { reviewId, content, status: "pending" };
-  const productId = req.params.id;
-
+app.listen(4001, async () => {
+  console.log("Reviews Listening on 4001");
   try {
-    await REVIEWSBYPROD.findOneAndUpdate(
-      { productId },
-      { $setOnInsert: { productId }, $addToSet: { reviews: review } },
-      { upsert: true, new: true }
+    const res = await axios.get(
+      "http://eventbus-srv:4005/failedEvents/reviews"
     );
-  } catch (error) {
-    console.error("Error adding review:", error);
-  }
 
-  await axios.post("http://eventbus-srv:4005/events", {
-    type: "ReviewCreated",
-    data: {
-      reviewId,
-      content,
-      productId: req.params.id,
-      status: "pending",
-    },
-  });
-
-  res.status(201).send({});
-});
-
-app.post("/events", async (req, res) => {
-  const { type, data } = req.body;
-
-  if (type === "ReviewModerated") {
-    console.log("Event Received:", req.body.type);
-    const { productId, reviewId, status, content } = data;
-    await editReviewContent(productId, reviewId, content, status);
-    await axios.post("http://eventbus-srv:4005/events", {
-      type: "ReviewUpdated",
-      data: {
-        reviewId,
-        status,
-        productId,
-        content,
-      },
-    });
-  }
-
-  res.send({});
-});
-
-async function editReviewContent(productId, reviewId, newContent, newStatus) {
-  try {
-    const updatedProduct = await REVIEWSBYPROD.findOneAndUpdate(
-      { productId, "reviews.reviewId": reviewId },
-      {
-        $set: {
-          "reviews.$.content": newContent,
-          "reviews.$.status": newStatus,
-        },
-      },
-      { new: true }
-    );
-    if (!updatedProduct) {
-      console.log(
-        `Product with productId ${productId} or review with reviewId ${reviewId} not found.`
-      );
-      return;
+    for (let event of res.data) {
+      handleEvent(event.type, event.data);
     }
   } catch (error) {
-    console.error("Error editing review content:", error);
+    console.log(error.message);
   }
-}
-
-app.listen(4001, () => {
-  console.log("Reviews Listening on 4001");
 });
