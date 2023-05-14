@@ -1,3 +1,5 @@
+# @format
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -14,7 +16,7 @@ spec:
     spec:
       containers:
         - name: moderation
-          image: sreenidhikr/spe-moderation
+          image: narasimhannandagudi/ekart-moderation
 ---
 apiVersion: v1
 kind: Service

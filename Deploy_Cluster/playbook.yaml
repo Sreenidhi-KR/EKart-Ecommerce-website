@@ -1,0 +1,11 @@
+# @format
+---
+- name: Deploy Kubernates cluster
+  hosts: localhost
+  remote_user: simha
+
+  tasks:
+    - name: Run Kubernetes Deployment files files
+      shell: kubectl apply -f "{{ item }}"
+      with_fileglob:
+        - ./../infra/k8s/*.yaml

@@ -1,0 +1,8 @@
+Kubernates Cluster deployed in simha@127.0.0.1 (Ansible Step)
+
+Prereq:
+    1)Generate SSH key from Jenkins user and send it to Simha@localhost
+    2)In simha@localhost. Before deployment:
+        >>minikube delete //Remove any old things running
+        >>minikube start
+        >>minikube addons enable ingress
