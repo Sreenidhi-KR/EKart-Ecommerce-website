@@ -1,0 +1,81 @@
+pipeline {
+    environment {
+    registryCredential = 'dockerhub_id'
+    
+    authImage = ''
+    clientImage=''
+    productsImage=''
+    ordersImage=''
+    queryImage=''
+    reviewsImage=''
+    moderationImage=''
+    eventbusImage=''
+    }
+    agent any
+
+    stages {
+        stage('Git access') {
+            steps {
+               git branch: 'main', url: 'https://github.com/NarasimhanN/E-Commerce.git'
+  
+            }
+        }
+          stage('Build Docker Image'){
+            steps{
+                   script{
+                    sh 'cd auth'
+                    
+                    authImage = docker.build("narasimhannandagudi/ekart-auth","./auth/")
+                    clientImage = docker.build("narasimhannandagudi/ekart-client","./client")
+                    eventbusImage = docker.build("narasimhannandagudi/ekart-eventbus","./eventbus/")
+                    reviewsImage = docker.build("narasimhannandagudi/ekart-reviews","./reviews/")
+                    ordersImage = docker.build("narasimhannandagudi/ekart-orders","./orders/")
+                    moderationImage = docker.build("narasimhannandagudi/ekart-moderation","./moderation/")
+                    queryImage = docker.build("narasimhannandagudi/ekart-query","./query/")
+                    productsImage = docker.build("narasimhannandagudi/ekart-products","./products/")
+
+
+
+                   }
+
+            }
+        }
+        stage("Upload Image to DockerHub"){
+            steps{
+                script{
+                    docker.withRegistry('',registryCredential){
+                        authImage.push()
+                        clientImage.push() 
+                        reviewsImage.push()
+                        ordersImage.push()
+                        moderationImage.push()
+                        queryImage.push()
+                        productsImage.push()
+                        eventbusImage.push()
+                    }
+                }
+            }
+        }
+          stage("Cleanup"){
+            steps{
+                    sh "docker rmi narasimhannandagudi/ekart-auth"
+                    sh "docker rmi narasimhannandagudi/ekart-client"
+                    sh "docker rmi narasimhannandagudi/ekart-products"
+                    sh "docker rmi narasimhannandagudi/ekart-orders"
+                    sh "docker rmi narasimhannandagudi/ekart-reviews"
+                    sh "docker rmi narasimhannandagudi/ekart-moderation"
+                    sh "docker rmi narasimhannandagudi/ekart-eventbus"
+                    sh "docker rmi narasimhannandagudi/ekart-query"
+
+            }
+        }
+         stage("Ansible Deploy cluster"){
+            steps{
+                ansiblePlaybook colorized: true, disableHostKeyChecking: true, inventory: 'Deploy-Cluster/inventory', playbook: 'Deploy-Cluster/playbook.yaml', sudoUser: null
+
+            }
+        }
+        
+
+    }
+}
