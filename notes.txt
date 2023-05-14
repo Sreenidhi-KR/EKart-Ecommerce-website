@@ -6,3 +6,13 @@ Prereq:
         >>minikube delete //Remove any old things running
         >>minikube start
         >>minikube addons enable ingress
+
+
+
+-----------------------------
+TESTING : 
+
+>>ansible -i myinventory -m ping all
+    //Pings all hosts in myinventory file
+
+>>ansible-playbook -i myinv ping myplaybook
