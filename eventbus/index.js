@@ -1,6 +1,9 @@
+/** @format */
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const axios = require("axios");
+const logger = require("./logger/index");
 
 const app = express();
 app.use(bodyParser.json());
@@ -12,7 +15,9 @@ app.post("/events", (req, res) => {
   const event = req.body;
 
   events.push(event);
-  console.log(event);
+  console.log(event.type);
+  logger.info(`${event.type} : ${JSON.stringify(event.data)}`);
+
   axios.post("http://products-srv:4000/events", event).catch((err) => {
     console.log("products service failed to capture event");
     handleFailedEvent(event, "products");

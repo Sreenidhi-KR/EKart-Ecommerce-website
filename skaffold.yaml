@@ -1,3 +1,5 @@
+# @format
+
 apiVersion: skaffold/v2alpha3
 kind: Config
 deploy:
@@ -8,7 +10,7 @@ build:
   local:
     push: false
   artifacts:
-    - image: sreenidhikr/spe-auth
+    - image: narasimhannandagudi/ekart-auth
       context: auth
       docker:
         dockerfile: Dockerfile
@@ -16,7 +18,7 @@ build:
         manual:
           - src: "*.js"
             dest: .
-    - image: sreenidhikr/spe-client
+    - image: narasimhannandagudi/ekart-client
       context: client
       docker:
         dockerfile: Dockerfile
@@ -26,7 +28,7 @@ build:
             dest: .
           - src: "src/**/*.css"
             dest: .
-    - image: sreenidhikr/spe-products
+    - image: narasimhannandagudi/ekart-products
       context: products
       docker:
         dockerfile: Dockerfile
@@ -34,7 +36,7 @@ build:
         manual:
           - src: "*.js"
             dest: .
-    - image: sreenidhikr/spe-eventbus
+    - image: narasimhannandagudi/ekart-eventbus
       context: eventbus
       docker:
         dockerfile: Dockerfile
@@ -42,7 +44,7 @@ build:
         manual:
           - src: "*.js"
             dest: .
-    - image: sreenidhikr/spe-reviews
+    - image: narasimhannandagudi/ekart-reviews
       context: reviews
       docker:
         dockerfile: Dockerfile
@@ -50,7 +52,7 @@ build:
         manual:
           - src: "*.js"
             dest: .
-    - image: sreenidhikr/spe-orders
+    - image: narasimhannandagudi/ekart-orders
       context: orders
       docker:
         dockerfile: Dockerfile
@@ -58,7 +60,7 @@ build:
         manual:
           - src: "*.js"
             dest: .
-    - image: sreenidhikr/spe-moderation
+    - image: narasimhannandagudi/ekart-moderation
       context: moderation
       docker:
         dockerfile: Dockerfile
@@ -66,7 +68,7 @@ build:
         manual:
           - src: "*.js"
             dest: .
-    - image: sreenidhikr/spe-query
+    - image: narasimhannandagudi/ekart-query
       context: query
       docker:
         dockerfile: Dockerfile

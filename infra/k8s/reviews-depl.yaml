@@ -1,3 +1,5 @@
+# @format
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -14,7 +16,7 @@ spec:
     spec:
       containers:
         - name: reviews
-          image: sreenidhikr/spe-reviews
+          image: narasimhannandagudi/ekart-reviews
 ---
 apiVersion: v1
 kind: Service
