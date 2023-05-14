@@ -105,40 +105,47 @@ app.get("/product/seller", authenticateToken, async (req, res) => {
   res.send({ products });
 });
 
+//TODO
 app.post("/events", async (req, res) => {
   const { data, type } = req.body;
   if (type === "OrderCreated") {
+    //const products_copy = structuredClone(products);
     console.log("Received Event", req.body.type);
+
+    const products = await PRODUCTS.find({});
     let flag = true;
     const orderedProducts = data.products;
 
-    const session = await mongoose.startSession();
-    session.startTransaction();
-    try {
-      for (let orderedProduct of orderedProducts) {
-        const quantityToReduce = Number(orderedProduct.quantity);
-        const existingProduct = await PRODUCTS.findOne({
-          productId: orderedProduct.productId,
-        }).session(session);
+    for (let orderedProduct of orderedProducts) {
+      const product = products.filter(
+        (prod) => prod.productId === orderedProduct.productId
+      )[0];
 
-        if (!existingProduct || existingProduct.stock < quantityToReduce) {
-          console.log("Insufficient stock. Transaction rolled back.");
-          flag = false;
-          throw new Error("Insufficient stock. Transaction rolled back.");
-        }
-        existingProduct.stock -= quantityToReduce;
-        await existingProduct.save();
+      const updated_stock =
+        Number(product.stock) - Number(orderedProduct.quantity);
+
+      if (updated_stock >= 0) {
+        product.stock = updated_stock;
+
+        //Update in Backend
+        PRODUCTS.findOneAndUpdate(
+          { productId: orderedProduct.productId }, // Filter to find the product by its ID
+          { $set: { stock: updated_stock } }, // Update the stock field with the new value
+          { new: true }
+        )
+          .then((updatedProduct) => {
+            console.log("Product updated successfully:");
+          })
+          .catch((error) => {
+            console.error("Error updating product:", error);
+          });
+      } else {
+        flag = false;
+        break;
       }
-      await session.commitTransaction();
-      session.endSession();
-      console.log("Transaction committed successfully.");
-    } catch (err) {
-      await session.abortTransaction();
-      session.endSession();
-      flag = false;
-      console.error("An error occurred. Transaction rolled back.", err);
     }
 
+    //Broadcase result to ORDERS and QUERY service
     try {
       if (flag) {
         console.log("Order Accepted");
