@@ -142,15 +142,13 @@ const handleEvent = async (type, data) => {
 
 app.listen(4002, async () => {
   console.log("Query Listening on :  4002");
-  // try {
-  //   const res = await axios.get("http://eventbus-srv:4005/events");
+  try {
+    const res = await axios.get("http://eventbus-srv:4005/failedEvents/query");
 
-  //   for (let event of res.data) {
-  //     console.log("Processing event:", event.type);
-
-  //     handleEvent(event.type, event.data);
-  //   }
-  // } catch (error) {
-  //   console.log(error.message);
-  // }
+    for (let event of res.data) {
+      handleEvent(event.type, event.data);
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
 });

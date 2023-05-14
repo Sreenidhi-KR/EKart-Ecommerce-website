@@ -52,22 +52,7 @@ app.post("/product/:id/reviews", async (req, res) => {
 
 app.post("/events", async (req, res) => {
   const { type, data } = req.body;
-
-  if (type === "ReviewModerated") {
-    console.log("Event Received:", req.body.type);
-    const { productId, reviewId, status, content } = data;
-    await editReviewContent(productId, reviewId, content, status);
-    await axios.post("http://eventbus-srv:4005/events", {
-      type: "ReviewUpdated",
-      data: {
-        reviewId,
-        status,
-        productId,
-        content,
-      },
-    });
-  }
-
+  handleEvent(type, data);
   res.send({});
 });
 
@@ -93,7 +78,34 @@ async function editReviewContent(productId, reviewId, newContent, newStatus) {
     console.error("Error editing review content:", error);
   }
 }
+const handleEvent = async (type, data) => {
+  if (type === "ReviewModerated") {
+    console.log("Event Received:", type);
+    const { productId, reviewId, status, content } = data;
+    await editReviewContent(productId, reviewId, content, status);
+    await axios.post("http://eventbus-srv:4005/events", {
+      type: "ReviewUpdated",
+      data: {
+        reviewId,
+        status,
+        productId,
+        content,
+      },
+    });
+  }
+};
 
-app.listen(4001, () => {
+app.listen(4001, async () => {
   console.log("Reviews Listening on 4001");
+  try {
+    const res = await axios.get(
+      "http://eventbus-srv:4005/failedEvents/reviews"
+    );
+
+    for (let event of res.data) {
+      handleEvent(event.type, event.data);
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
 });

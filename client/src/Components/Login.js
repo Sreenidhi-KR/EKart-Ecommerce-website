@@ -44,7 +44,7 @@ export const Login = () => {
     <div
       style={{
         background:
-          "linear-gradient(90deg, rgba(22,27,32,1) 0%, rgba(2,7,19,1) 100%)",
+          "radial-gradient(circle, rgba(42,52,61,1) 0%, rgba(2,8,23,1) 100%)",
       }}
       className="Auth-form-container myGradient"
     >

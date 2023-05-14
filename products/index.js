@@ -107,8 +107,13 @@ app.get("/product/seller", authenticateToken, async (req, res) => {
 
 app.post("/events", async (req, res) => {
   const { data, type } = req.body;
+  handleEvent(type, data);
+  res.send({});
+});
+
+const handleEvent = async (type, data) => {
   if (type === "OrderCreated") {
-    console.log("Received Event", req.body.type);
+    console.log("Received Event", type);
     let flag = true;
     const orderedProducts = data.products;
 
@@ -164,9 +169,7 @@ app.post("/events", async (req, res) => {
       console.log(err.message);
     }
   }
-
-  res.send({});
-});
+};
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
@@ -187,6 +190,17 @@ function authenticateToken(req, res, next) {
   }
 }
 
-app.listen(4000, () => {
+app.listen(4000, async () => {
   console.log("Products Listening on - 4000");
+  try {
+    const res = await axios.get(
+      "http://eventbus-srv:4005/failedEvents/products"
+    );
+
+    for (let event of res.data) {
+      handleEvent(event.type, event.data);
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
 });
