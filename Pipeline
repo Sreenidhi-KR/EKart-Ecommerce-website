@@ -42,7 +42,7 @@ pipeline {
         }
          stage('Test') {
             steps {
-                dir("auth"){
+                dir("./auth"){
                     sh 'npm install'
                     sh 'jest'
                 }
