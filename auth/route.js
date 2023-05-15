@@ -111,7 +111,7 @@ router.delete("/logout", (req, res) => {
   refreshTokens = refreshTokens.filter(
     (refreshToken) => refreshToken != req.body.refreshToken
   );
-  res.sendStatus(204);
+  res.sendStatus(201);
 });
 
 function generateRefreshToken(user) {
