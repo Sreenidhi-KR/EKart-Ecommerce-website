@@ -40,6 +40,13 @@ pipeline {
 
             }
         }
+         stage('Test') {
+            steps {
+                dir(auth){
+                    sh 'jest'
+                }
+            }
+        }
         stage("Upload Image to DockerHub"){
             steps{
                 script{
@@ -56,13 +63,7 @@ pipeline {
                 }
             }
         }
-        stage('Test') {
-            steps {
-                dir(auth){
-                    sh 'jest'
-                }
-            }
-        }
+   
           stage("Cleanup"){
             steps{
                     sh "docker rmi narasimhannandagudi/ekart-auth"
@@ -78,7 +79,9 @@ pipeline {
         }
          stage("Ansible Deploy cluster"){
             steps{
-                ansiblePlaybook colorized: true, disableHostKeyChecking: true, inventory: 'Deploy-Cluster/inventory', playbook: 'Deploy-Cluster/playbook.yaml', sudoUser: null
+                ansiblePlaybook colorized: true, disableHostKeyChecking: true,
+                 inventory: 'Deploy-Cluster/inventory', playbook: 'Deploy-Cluster/playbook.yaml',
+                  sudoUser: null
 
             }
         }
