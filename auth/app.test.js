@@ -1,5 +1,5 @@
 const request = require("supertest");
-const authApp = require("./app.js");
+const authApp = require("./testapp.js");
 //const queryApp = require("../query/app.js");
 
 describe("Workflow Test", () => {
@@ -7,7 +7,7 @@ describe("Workflow Test", () => {
     let seller;
     let user;
     //AUTH
-    test("REGISTER SELLER : should PASS", async () => {
+    test("REGISTER SELLER : should respond 201", async () => {
       const response = await request(authApp).post("/auth/register").send({
         userName: "testSeller",
         password: "password",
@@ -15,20 +15,36 @@ describe("Workflow Test", () => {
       });
       expect(response.statusCode).toBe(201);
     });
-    test("REGISTER USER : should PASS", async () => {
+    test("REGISTER USER : should respond 201", async () => {
       const response = await request(authApp).post("/auth/register").send({
-        userName: "testUSER",
+        userName: "testUSER3",
         password: "password",
         isSeller: true,
       });
       expect(response.statusCode).toBe(201);
     });
+    test("REGISTER USER Invalid/No Username: should respond 400", async () => {
+      const response = await request(authApp).post("/auth/register").send({
+        password: "password",
+        isSeller: true,
+      });
+      expect(response.statusCode).toBe(400);
+    });
+    test("REGISTER USER Already exists : should respond 400", async () => {
+      const response = await request(authApp).post("/auth/register").send({
+        userName: "testUSER3",
+        password: "password",
+        isSeller: true,
+      });
+      expect(response.statusCode).toBe(400);
+    });
+
     test("LOGIN SELLER : should PASS", async () => {
       const response = await request(authApp).post("/auth/login").send({
         userName: "testSeller",
         password: "password",
       });
-      seller = response;
+      seller = response.body;
       expect(response.statusCode).toBe(201);
       expect(response.body.accessToken).toBeDefined();
       expect(response.body.refreshToken).toBeDefined();
@@ -37,29 +53,50 @@ describe("Workflow Test", () => {
     });
     test("LOGIN USER : should PASS", async () => {
       const response = await request(authApp).post("/auth/login").send({
-        userName: "testUSER",
+        userName: "testUSER3",
         password: "password",
       });
-      user = response;
+      user = response.body;
       expect(response.statusCode).toBe(201);
       expect(response.body.accessToken).toBeDefined();
       expect(response.body.refreshToken).toBeDefined();
       expect(response.body.userName).toBeDefined();
       expect(response.body.isSeller).toBeDefined();
     });
-    test("LOGIN USER : should FAIL", async () => {
+    test("LOGIN USER no Password/username : should return 400", async () => {
       const response = await request(authApp).post("/auth/login").send({
         userName: "testSeller",
       });
       expect(response.statusCode).toBe(400);
     });
-    test("LOGIN USER :should FAIL", async () => {
+    test("LOGIN USER  Wrong Password :should return 400", async () => {
       const response = await request(authApp).post("/auth/login").send({
-        password: "password",
+        userName: "testUSER3",
+        password: "wrongPassword",
       });
       expect(response.statusCode).toBe(400);
     });
 
+    test("REFRESH TOKEN USER : should return with new Refreshtoken", async () => {
+      const response = await request(authApp).post("/auth/new-token").send({
+        refreshToken: user.refreshToken,
+      });
+      expect(response.statusCode).toBe(200);
+      expect(response.body.accessToken).toBeDefined();
+    });
+
+    test("DELETE SELLER : should respond with 201", async () => {
+      const response = await request(authApp).delete("/auth/delete").send({
+        userName: "testSeller",
+      });
+      expect(response.statusCode).toBe(201);
+    });
+    test("DELETE USER : should respond with 201", async () => {
+      const response = await request(authApp).delete("/auth/delete").send({
+        userName: "testUSER3",
+      });
+      expect(response.statusCode).toBe(201);
+    });
     //QUERY
 
     // test("QUERY PRODUCT :", async () => {
@@ -80,12 +117,5 @@ describe("Workflow Test", () => {
     //     });
     //   expect(response.statusCode).toBe(201);
     // });
-
-    test("DELETE USER : should PASS", async () => {
-      const response = await request(authApp).delete("/auth/delete").send({
-        userName: "testSeller",
-      });
-      expect(response.statusCode).toBe(201);
-    });
   });
 });
