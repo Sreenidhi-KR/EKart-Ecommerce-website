@@ -17,6 +17,12 @@ spec:
       containers:
         - name: reviews
           image: narasimhannandagudi/ekart-reviews
+          env:
+            - name: DB_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: REVIEWS_DB_URL
 ---
 apiVersion: v1
 kind: Service

@@ -17,6 +17,12 @@ spec:
       containers:
         - name: query
           image: narasimhannandagudi/ekart-query
+          env:
+            - name: DB_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: QUERY_DB_URL
 ---
 apiVersion: v1
 kind: Service
