@@ -186,4 +186,4 @@ function authenticateToken(req, res, next) {
     console.log(err);
   }
 }
-module.exports = app;
+module.exports = { app, handleEvent };

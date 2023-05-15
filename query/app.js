@@ -138,4 +138,4 @@ const handleEvent = async (type, data) => {
     });
   }
 };
-module.exports = app;
+module.exports = { app, handleEvent };

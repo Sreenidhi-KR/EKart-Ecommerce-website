@@ -1,6 +1,6 @@
 /** @format */
 
-const app = require("./app");
+const { app, handleEvent } = require("./app");
 const axios = require("axios");
 app.listen(4004, async () => {
   console.log("Orders listening on port 4004");

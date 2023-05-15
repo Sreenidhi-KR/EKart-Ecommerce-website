@@ -1,4 +1,4 @@
-const app = require("./app");
+const { app, handleEvent } = require("./app");
 const axios = require("axios");
 app.listen(4000, async () => {
   console.log("Products Listening on - 4000");
