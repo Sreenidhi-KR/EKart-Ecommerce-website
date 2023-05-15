@@ -44,7 +44,7 @@ pipeline {
             steps {
                 dir("./auth"){
                     sh 'npm install'
-                    sh 'jest'
+                    sh 'npx jest'
                 }
             }
         }
