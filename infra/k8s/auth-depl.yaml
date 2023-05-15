@@ -17,6 +17,23 @@ spec:
       containers:
         - name: auth
           image: narasimhannandagudi/ekart-auth
+          env:
+            - name: ACCESS_TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: tokens-secret
+                  key: ACCESS_TOKEN_SECRET
+            - name: REFRESH_TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: tokens-secret
+                  key: REFRESH_TOKEN_SECRET
+            - name: DB_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: AUTH_DB_URL
+
 ---
 apiVersion: v1
 kind: Service

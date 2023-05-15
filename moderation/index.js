@@ -1,4 +1,4 @@
-const app = require("./app");
+const { app, handleEvent } = require("./app");
 const axios = require("axios");
 
 app.listen(4003, async () => {

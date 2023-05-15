@@ -7,7 +7,7 @@ const app = express();
 const mongoose = require("mongoose");
 
 const REVIEWSBYPROD = require("./Reviews");
-let dbURL = `mongodb+srv://Simha:Simha@cluster0.w56omxb.mongodb.net/Reviews?retryWrites=true&w=majority`;
+let dbURL = process.env.DB_URL;
 
 mongoose
   .connect(dbURL, {
@@ -94,4 +94,4 @@ const handleEvent = async (type, data) => {
     });
   }
 };
-module.exports = app;
+module.exports = { app, handleEvent };

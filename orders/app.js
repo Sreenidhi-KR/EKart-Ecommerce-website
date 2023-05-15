@@ -10,11 +10,9 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-const ACCESS_TOKEN_SECRET =
-  "cfb62c7e5f017b1531ecf97e60c1e90b2927a5923a163a43e287e50ac21cab5192a03c6e1698bd7012153f985274cf8d6b9eb84b3efa10d895278b68442f89bf";
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 
-let dbURL =
-  "mongodb+srv://Simha:Simha@cluster0.w56omxb.mongodb.net/Orders?retryWrites=true&w=majority";
+let dbURL = process.env.DB_URL;
 
 mongoose
   .connect(dbURL, {
@@ -121,4 +119,4 @@ function authenticateToken(req, res, next) {
     console.log("err", err);
   }
 }
-module.exports = app;
+module.exports = { app, handleEvent };

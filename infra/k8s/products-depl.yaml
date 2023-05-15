@@ -17,6 +17,17 @@ spec:
       containers:
         - name: products
           image: narasimhannandagudi/ekart-products
+          env:
+            - name: ACCESS_TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: tokens-secret
+                  key: ACCESS_TOKEN_SECRET
+            - name: DB_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: PRODUCTS_DB_URL
 ---
 apiVersion: v1
 kind: Service
