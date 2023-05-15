@@ -28,24 +28,24 @@ app.post("/product/:id/reviews", async (req, res) => {
   const productId = req.params.id;
 
   try {
-    await REVIEWSBYPROD.findOneAndUpdate(
+    REVIEWSBYPROD.findOneAndUpdate(
       { productId },
       { $setOnInsert: { productId }, $addToSet: { reviews: review } },
       { upsert: true, new: true }
-    );
+    ).then(async () => {
+      await axios.post("http://eventbus-srv:4005/events", {
+        type: "ReviewCreated",
+        data: {
+          reviewId,
+          content,
+          productId: req.params.id,
+          status: "pending",
+        },
+      });
+    });
   } catch (error) {
     console.error("Error adding review:", error);
   }
-
-  await axios.post("http://eventbus-srv:4005/events", {
-    type: "ReviewCreated",
-    data: {
-      reviewId,
-      content,
-      productId: req.params.id,
-      status: "pending",
-    },
-  });
 
   res.status(201).send({});
 });
