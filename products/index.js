@@ -1,5 +1,3 @@
-/** @format */
-
 const app = require("./app");
 const axios = require("axios");
 app.listen(4000, async () => {

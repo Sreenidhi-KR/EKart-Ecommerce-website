@@ -13,8 +13,10 @@ export const RequireSellerAuth = ({ children }) => {
     }
   }, []);
 
-  if (!user || !user?.isSeller) {
+  if (!user)
     return <Navigate to="/user-login" state={{ path: location.pathname }} />;
+  if (!user?.isSeller) {
+    return <Navigate to="/" state={{ path: location.pathname }} />;
   }
   return (
     <div>
