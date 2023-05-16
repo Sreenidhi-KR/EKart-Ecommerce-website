@@ -81,29 +81,30 @@ const handleEvent = async (type, data) => {
 
   if (type === "ReviewUpdated") {
     const { reviewId, content, productId, status } = data;
+    setTimeout(() => {
+      PRODUCTS.findOne({ productId })
+        .then((product) => {
+          if (!product) {
+            throw new Error("Product not found");
+          }
+          const reviewIndex = product.reviews.findIndex(
+            (review) => review.reviewId === reviewId
+          );
 
-    PRODUCTS.findOne({ productId })
-      .then((product) => {
-        if (!product) {
-          throw new Error("Product not found");
-        }
-        const reviewIndex = product.reviews.findIndex(
-          (review) => review.reviewId === reviewId
-        );
-
-        if (reviewIndex === -1) {
-          throw new Error("Review not found");
-        }
-        product.reviews[reviewIndex].content = content;
-        product.reviews[reviewIndex].status = status;
-        return product.save();
-      })
-      .then((updatedProduct) => {
-        console.log("Review updated:");
-      })
-      .catch((error) => {
-        console.error("Error updating review:", error);
-      });
+          if (reviewIndex === -1) {
+            throw new Error("Review not found");
+          }
+          product.reviews[reviewIndex].content = content;
+          product.reviews[reviewIndex].status = status;
+          return product.save();
+        })
+        .then((updatedProduct) => {
+          console.log("Review updated:");
+        })
+        .catch((error) => {
+          console.error("Error updating review:", error);
+        });
+    }, 2000);
   }
 
   if (type === "OrderAccepted") {
