@@ -63,7 +63,10 @@ const OrderList = () => {
                     <h6>Price : ₹ {product.price}</h6>
                     <h6>Quantity : {product.quantity} Units</h6>
                     {order.status === "Accepted" ? (
-                      <ReviewCreate productId={product.productId} />
+                      <ReviewCreate
+                        productId={product.productId}
+                        productName={product.name}
+                      />
                     ) : null}
                   </div>
                 </div>
