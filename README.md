@@ -1,3 +1,3 @@
 # E-Commerce
 E-Commerce application build using micro services and kubernetes
-![Screenshot](ekart-events.png)
+![Alt text](/ekart-events.png?raw=true "events")
