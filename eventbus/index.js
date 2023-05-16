@@ -36,7 +36,7 @@ app.post("/events", (req, res) => {
   }
   if (type == "ReviewCreated")
     logger.info(
-      `${event.type} Productname:${data.name} Review:${data.content}`
+      `${event.type} Productname:${data.productName} Review:${data.content}`
     );
 
   events.push(event);
