@@ -28,15 +28,15 @@ app.post("/events", (req, res) => {
   const { type, data } = req.body;
 
   if (type == "ProductCreated" || type == "ProductUpdated") {
-    logger.info(`${type} Productname:${data.name}`);
+    logger.info(`${type};Productname:${data.name}`);
   }
   if (type == "OrderAccepted") {
     for (let prods of data.products)
-      logger.info(`${type} Productname:${prods.name}`);
+      logger.info(`${type};Productname:${prods.name}`);
   }
   if (type == "ReviewCreated")
     logger.info(
-      `${event.type} Productname:${data.productName} Review:${data.content}`
+      `${event.type};Productname:${data.productName};Review:${data.content}`
     );
 
   events.push(event);

@@ -3,7 +3,7 @@ const { createLogger, format, transports } = require("winston");
 const { combine, timestamp, label, printf } = format;
 
 const myFormat = printf(({ level, message, label, timestamp }) => {
-  return `${timestamp} [${level}] ${message}`;
+  return `${timestamp};${message}`;
 });
 
 const developmentLogger = () => {
@@ -14,9 +14,7 @@ const developmentLogger = () => {
     format: combine(
       format.colorize(),
       label({ label: "right meow!" }),
-      timestamp({
-        format: "HH:mm:ss",
-      }),
+      timestamp({}),
       myFormat
     ),
     //  defaultMeta: { service: "user-service" },

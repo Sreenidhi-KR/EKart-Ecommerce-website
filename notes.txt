@@ -35,3 +35,8 @@ TESTING :
     //Pings all hosts in myinventory file
 
 >>ansible-playbook -i myinv ping myplaybook
+
+
+-----------------------------
+grok pattern 
+%{TIMESTAMP_ISO8601:timestamp};%{WORD:action};Productname:%{WORD:product_name}(?:;Review:%{WORD:review})?
