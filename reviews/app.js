@@ -23,7 +23,7 @@ app.use(cors());
 
 app.post("/product/:id/reviews", async (req, res) => {
   const reviewId = randomBytes(4).toString("hex");
-  const { content } = req.body;
+  const { content, productName } = req.body;
   const review = { reviewId, content, status: "pending" };
   const productId = req.params.id;
 
@@ -39,6 +39,7 @@ app.post("/product/:id/reviews", async (req, res) => {
           reviewId,
           content,
           productId: req.params.id,
+          productName,
           status: "pending",
         },
       });
