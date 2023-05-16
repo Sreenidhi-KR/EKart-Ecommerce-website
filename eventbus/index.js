@@ -1,3 +1,5 @@
+/** @format */
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const axios = require("axios");
@@ -11,10 +13,25 @@ let failedEvents = [];
 
 app.post("/events", (req, res) => {
   const event = req.body;
+  const { type, data } = req.body;
+
+  if (type == "ProductCreated" || type == "ProductUpdated") {
+    logger.info(
+      `${type} - Sellername:${data.sellerName}  Productname:${data.name}`
+    );
+  }
+  if (type == "OrderAccepted") {
+    for (let prods of data.products)
+      logger.info(`${type} - Productname:${prods.name}`);
+  }
+  if (type == "ReviewCreated")
+    logger.info(
+      `${event.type} ProductId:${data.productId} Review:${data.content}`
+    );
 
   events.push(event);
   console.log(event.type);
-  logger.info(`${event.type} : ${JSON.stringify(event.data)}`);
+  //logger.info(`${event.type} : ${JSON.stringify(event.data)}`);
 
   axios.post("http://products-srv:4000/events", event).catch((err) => {
     console.log("products service failed to capture event");
@@ -72,5 +89,5 @@ app.get("/failedEvents/:service", (req, res) => {
 });
 
 app.listen(4005, () => {
-  console.log("Eventbus Listening on 4005");
+  console.log("Eventbus Listening on :: 4005");
 });
