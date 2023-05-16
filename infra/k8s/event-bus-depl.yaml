@@ -17,6 +17,12 @@ spec:
       containers:
         - name: eventbus
           image: narasimhannandagudi/ekart-eventbus
+          env:
+            - name: DB_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: EVENTS_DB_URL
 ---
 apiVersion: v1
 kind: Service
