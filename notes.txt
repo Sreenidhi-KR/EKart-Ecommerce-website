@@ -9,7 +9,13 @@ DEPLOYMENT:
             >>minikube start
             >>minikube addons enable ingress
 
+install ingress : 
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/cloud/deploy.yaml
+
+add to host file
+
 RUNNING :
+
     Application can be accessed by : http://ekart.com on simha@127.0.0.1
 
     Prereq:
@@ -17,6 +23,7 @@ RUNNING :
             >>minikube ip
             output: 192.168.2.49
         2)>>nano /etc/hosts
+            windows C:\Windows\System32\Drivers\etc\hosts
             In the file:
                 192.168.2.47 ekart.com
                 //This is setting that the above IP should be routed to localhost
